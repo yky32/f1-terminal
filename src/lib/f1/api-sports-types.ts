@@ -18,12 +18,36 @@ import { API_SPORTS_BASE_URL, API_SPORTS_DOCS_URL } from "@/lib/f1/api-sports-en
 
 export { API_SPORTS_BASE_URL, API_SPORTS_DOCS_URL };
 
+export type ApiSportsPaging = {
+  current: number;
+  total: number;
+};
+
 export type ApiSportsEnvelope<T> = {
   get: string;
   parameters: Record<string, string | number | boolean>;
   errors: string[] | Record<string, string>;
   results: number;
+  paging?: ApiSportsPaging;
   response: T[];
+};
+
+/** GET /status — `response` is an object, not an array. */
+export type ApiSportsStatusPayload = {
+  account: {
+    firstname: string;
+    lastname: string;
+    email: string;
+  };
+  subscription: {
+    plan: string;
+    end: string;
+    active: boolean;
+  };
+  requests: {
+    current: number;
+    limit_day: number;
+  };
 };
 
 export type ApiSportsLocation = {

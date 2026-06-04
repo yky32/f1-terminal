@@ -333,6 +333,7 @@ async function loadApiSportsSeasonBundleFresh(
 ): Promise<ApiSportsSeasonBundle> {
   const season = await resolveSeasonYear(client);
 
+  // Parallel call sites are OK — http-client queues requests per API-Sports architecture.
   const [races, driverRankings, teamRankings, circuits] = await Promise.all([
     client.get<ApiSportsRace>(API_SPORTS_PATHS.races, { season }),
     client.get<ApiSportsDriverRanking>(API_SPORTS_PATHS.rankingsDrivers, { season }),

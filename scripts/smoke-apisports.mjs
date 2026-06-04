@@ -21,6 +21,7 @@ const apiKey = process.env.API_SPORTS_KEY?.trim();
 const season = Number(process.env.API_SPORTS_SEASON?.trim() || "2024");
 
 const paths = {
+  status: "/status",
   races: `/races?season=${season}`,
   drivers: `/rankings/drivers?season=${season}`,
   teams: `/rankings/teams?season=${season}`,
@@ -31,37 +32,64 @@ if (!apiKey) {
   process.exit(1);
 }
 
+function extractErrors(errors) {
+  if (!errors) return [];
+  if (Array.isArray(errors)) return errors.map(String);
+  if (typeof errors === "object") return Object.values(errors).map(String);
+  return [String(errors)];
+}
+
+function readRateLimit(headers) {
+  return {
+    minuteRemaining: headers.get("x-ratelimit-remaining"),
+    minuteLimit: headers.get("x-ratelimit-limit"),
+    dailyRemaining: headers.get("x-ratelimit-requests-remaining"),
+    dailyLimit: headers.get("x-ratelimit-requests-limit"),
+  };
+}
+
 async function get(path) {
   const response = await fetch(`${baseUrl}${path}`, {
     headers: { "x-apisports-key": apiKey },
   });
   const body = await response.json();
-  const errors = body.errors
-    ? Array.isArray(body.errors)
-      ? body.errors
-      : Object.values(body.errors)
-    : [];
+  const errors = extractErrors(body.errors);
 
   if (!response.ok || errors.length > 0) {
     throw new Error(errors[0] ?? `Request failed (${response.status})`);
   }
 
-  return body.response;
+  return { body, rateLimit: readRateLimit(response.headers) };
 }
 
 try {
-  const [races, drivers, teams] = await Promise.all([
+  const statusResult = await get(paths.status);
+  const status = statusResult.body.response;
+  const [racesResult, driversResult, teamsResult] = await Promise.all([
     get(paths.races),
     get(paths.drivers),
     get(paths.teams),
   ]);
+
+  const races = racesResult.body.response;
+  const drivers = driversResult.body.response;
+  const teams = teamsResult.body.response;
 
   const raceSessions = races.filter((race) => race.type === "Race");
   const live = races.filter((race) => race.status === "Live");
   const upcoming = races.filter((race) => race.status === "Scheduled");
 
   console.log(`API-Sports F1 · season ${season}`);
-  console.log(`- Docs: https://api-sports.io/documentation/formula-1/v1`);
+  console.log(`- Docs: https://api-sports.io/documentation/formula-1/v1#section/Architecture`);
+  console.log(
+    `- Account: ${status.account.firstname} ${status.account.lastname} · ${status.subscription.plan}`,
+  );
+  console.log(
+    `- Daily usage: ${status.requests.current}/${status.requests.limit_day} (status endpoint)`,
+  );
+  console.log(
+    `- Rate limit headers: ${statusResult.rateLimit.minuteRemaining}/${statusResult.rateLimit.minuteLimit} per min · ${statusResult.rateLimit.dailyRemaining}/${statusResult.rateLimit.dailyLimit} per day`,
+  );
   console.log(`- Race weekends: ${raceSessions.length}`);
   console.log(`- Sessions total: ${races.length}`);
   console.log(`- Live sessions: ${live.length}`);
