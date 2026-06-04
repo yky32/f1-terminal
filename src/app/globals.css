@@ -798,22 +798,22 @@
     opacity: 0;
     border-radius: 9999px;
     filter: blur(6px) saturate(140%);
-    transform: translateY(-14px) scale(0.22, 0.42);
+    transform: translateY(-6px) scale(0.88, 0.94);
   }
   38% {
     opacity: 0.94;
     border-radius: 1.35rem;
     filter: blur(1px) saturate(165%);
-    transform: translateY(5px) scale(1.05, 1.03);
+    transform: translateY(2px) scale(1.02, 1.01);
   }
   58% {
     border-radius: 1.05rem;
     filter: blur(0) saturate(180%);
-    transform: translateY(-2px) scale(0.985, 1.015);
+    transform: translateY(-1px) scale(0.995, 1.008);
   }
   78% {
     border-radius: 0.82rem;
-    transform: translateY(1px) scale(1.008, 0.994);
+    transform: translateY(0) scale(1.004, 0.998);
   }
   100% {
     opacity: 1;

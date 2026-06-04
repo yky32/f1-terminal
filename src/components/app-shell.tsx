@@ -47,7 +47,7 @@ function AppShellFrame({ children }: { children: React.ReactNode }) {
       {!headerHidden ? (
         <header
           id="app-site-header"
-          className={`sticky top-0 z-50 ${glassStrong} rounded-none border-x-0 border-t-0 border-b border-black/[0.08]`}
+          className={`sticky top-0 z-[60] ${glassStrong} rounded-none border-x-0 border-t-0 border-b border-black/[0.08]`}
         >
           <div className="page-container flex h-[4.25rem] items-center justify-between gap-3">
             <Logo />

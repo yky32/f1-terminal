@@ -32,8 +32,8 @@ import {
 import { buildTimeZoneOptions } from "@/lib/timezone";
 import { cn } from "@/lib/utils";
 
-const MENU_Z_BACKDROP = 200;
-const MENU_Z_PANEL = 201;
+const MENU_Z_BACKDROP = 55;
+const MENU_Z_PANEL = 56;
 const MENU_GAP_PX = 8;
 const APP_HEADER_ID = "app-site-header";
 
@@ -188,6 +188,8 @@ function UserMenuPanel({
           top: position.top,
           right: position.right,
           zIndex: MENU_Z_PANEL,
+          maxHeight: `calc(100vh - ${position.top}px - 12px)`,
+          overflowY: "auto",
         }}
         className={cn(
           glassStrong,
@@ -270,10 +272,11 @@ export function UserMenu() {
     if (!trigger) return;
 
     const rect = trigger.getBoundingClientRect();
+    const headerBottom = headerBottomForTrigger(trigger);
     setPosition({
-      top: rect.bottom + MENU_GAP_PX,
+      top: headerBottom + MENU_GAP_PX,
       right: Math.max(12, window.innerWidth - rect.right),
-      headerBottom: headerBottomForTrigger(trigger),
+      headerBottom,
     });
   }, []);
 
@@ -290,9 +293,11 @@ export function UserMenu() {
     };
 
     window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
     window.addEventListener("keydown", onKeyDown);
     return () => {
       window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
       window.removeEventListener("keydown", onKeyDown);
     };
   }, [open, updatePosition]);
