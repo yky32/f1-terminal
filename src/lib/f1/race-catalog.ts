@@ -10,6 +10,10 @@ export function getCatalogEntryById(id: string): RaceCatalogEntry | null {
   return RACE_CATALOG.find((entry) => entry.id === id) ?? null;
 }
 
+export function getCatalogEntryByCompetitionId(competitionId: number): RaceCatalogEntry | null {
+  return RACE_CATALOG.find((entry) => entry.apiCompetitionId === competitionId) ?? null;
+}
+
 export function buildRaceCatalogShell(entry: RaceCatalogEntry): RaceProfile {
   const geo = geoForRaceId(entry.id);
 

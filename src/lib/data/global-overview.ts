@@ -10,9 +10,13 @@ import type { DataProviderId } from "@/lib/data/types";
 export type ChampionshipLeader = {
   season: number;
   seasonLabel: string;
+  driverId?: number;
   driverName: string;
   driverAbbr: string;
+  driverImage?: string | null;
   teamName: string;
+  teamId?: number;
+  teamLogo?: string | null;
   points: number;
   wins: number;
 };

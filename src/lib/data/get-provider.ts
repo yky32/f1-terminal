@@ -1,19 +1,25 @@
 import "server-only";
 
 import type { F1DataProvider } from "@/lib/data/provider";
+import { createApiSportsProvider } from "@/lib/data/providers/apisports/client";
 import { createMockProvider } from "@/lib/data/providers/mock/client";
 import type { DataProviderId } from "@/lib/data/types";
 
-export const DATA_PROVIDER_IDS = ["mock", "apisports"] as const satisfies readonly DataProviderId[];
+export const DATA_PROVIDER_IDS = ["mock", "api-sports"] as const satisfies readonly DataProviderId[];
 
 function resolveProviderId(): DataProviderId {
   const configured = process.env.DATA_PROVIDER?.trim();
-  if (configured === "mock" || configured === "apisports") {
+  if (configured === "mock" || configured === "api-sports") {
     return configured;
   }
 
+  if (configured === "apisports") {
+    console.warn('[data] DATA_PROVIDER=apisports is deprecated — use DATA_PROVIDER=api-sports');
+    return "api-sports";
+  }
+
   if (configured === "rest") {
-    console.warn('[data] "rest" is deprecated — use DATA_PROVIDER=apisports with API_SPORTS_KEY');
+    console.warn('[data] "rest" is deprecated — use DATA_PROVIDER=api-sports with API_SPORTS_KEY');
   }
 
   if (configured) {
@@ -27,16 +33,14 @@ function resolveProviderId(): DataProviderId {
 export function getDataProvider(): F1DataProvider {
   const id = resolveProviderId();
 
-  if (id === "apisports") {
+  if (id === "api-sports") {
     const apiKey = process.env.API_SPORTS_KEY?.trim();
     if (!apiKey) {
       console.warn("[data] API_SPORTS_KEY missing — falling back to mock provider");
       return createMockProvider();
     }
 
-    // Real API-Sports client ships in a follow-up PR — mock keeps dev cost-free.
-    console.warn("[data] API-Sports client not wired yet — using mock payloads shaped like API-Sports");
-    return createMockProvider();
+    return createApiSportsProvider(apiKey);
   }
 
   return createMockProvider();

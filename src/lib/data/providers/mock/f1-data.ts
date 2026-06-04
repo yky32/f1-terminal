@@ -26,11 +26,11 @@ const MOCK_DRIVER_STANDINGS: DriverStandingRow[] = [
   { position: 2, driverId: 2, driverName: "Lando Norris", driverAbbr: "NOR", driverNumber: 4, teamId: 2, teamName: "McLaren", points: 124, wins: 2 },
   { position: 3, driverId: 4, driverName: "Oscar Piastri", driverAbbr: "PIA", driverNumber: 81, teamId: 2, teamName: "McLaren", points: 108, wins: 1 },
   { position: 4, driverId: 3, driverName: "Charles Leclerc", driverAbbr: "LEC", driverNumber: 16, teamId: 3, teamName: "Ferrari", points: 102, wins: 0 },
-  { position: 5, driverId: 5, driverName: "George Russell", driverAbbr: "RUS", driverNumber: 63, teamId: 4, teamName: "Mercedes", points: 88, wins: 1 },
+  { position: 5, driverId: 5, driverName: "George Russell", driverAbbr: "RUS", driverNumber: 63, teamId: 5, teamName: "Mercedes", points: 88, wins: 1 },
   { position: 6, driverId: 6, driverName: "Lewis Hamilton", driverAbbr: "HAM", driverNumber: 44, teamId: 3, teamName: "Ferrari", points: 76, wins: 0 },
-  { position: 7, driverId: 7, driverName: "Kimi Antonelli", driverAbbr: "ANT", driverNumber: 12, teamId: 4, teamName: "Mercedes", points: 54, wins: 0 },
-  { position: 8, driverId: 8, driverName: "Carlos Sainz", driverAbbr: "SAI", driverNumber: 55, teamId: 7, teamName: "Williams", points: 41, wins: 0 },
-  { position: 9, driverId: 9, driverName: "Alexander Albon", driverAbbr: "ALB", driverNumber: 23, teamId: 7, teamName: "Williams", points: 32, wins: 0 },
+  { position: 7, driverId: 7, driverName: "Kimi Antonelli", driverAbbr: "ANT", driverNumber: 12, teamId: 5, teamName: "Mercedes", points: 54, wins: 0 },
+  { position: 8, driverId: 8, driverName: "Carlos Sainz", driverAbbr: "SAI", driverNumber: 55, teamId: 12, teamName: "Williams", points: 41, wins: 0 },
+  { position: 9, driverId: 9, driverName: "Alexander Albon", driverAbbr: "ALB", driverNumber: 23, teamId: 12, teamName: "Williams", points: 32, wins: 0 },
   { position: 10, driverId: 10, driverName: "Liam Lawson", driverAbbr: "LAW", driverNumber: 30, teamId: 1, teamName: "Red Bull Racing", points: 28, wins: 0 },
 ];
 
@@ -38,8 +38,8 @@ const MOCK_CONSTRUCTOR_STANDINGS: ConstructorStandingRow[] = [
   { position: 1, teamId: 2, teamName: "McLaren", points: 210, wins: 2 },
   { position: 2, teamId: 1, teamName: "Red Bull Racing", points: 190, wins: 4 },
   { position: 3, teamId: 3, teamName: "Ferrari", points: 165, wins: 0 },
-  { position: 4, teamId: 4, teamName: "Mercedes", points: 142, wins: 1 },
-  { position: 5, teamId: 5, teamName: "Aston Martin", points: 58, wins: 0 },
+  { position: 4, teamId: 5, teamName: "Mercedes", points: 142, wins: 1 },
+  { position: 5, teamId: 17, teamName: "Aston Martin", points: 58, wins: 0 },
 ];
 
 const MONACO_WEATHER: WeatherSummary = {
@@ -425,9 +425,11 @@ export function getMockGlobalOverview(): GlobalOverviewPayload {
     championship: {
       season: GLOBAL_SEASON,
       seasonLabel: `${GLOBAL_SEASON} FIA Formula One World Championship`,
+      driverId: leader.driverId,
       driverName: leader.driverName,
       driverAbbr: leader.driverAbbr,
       teamName: leader.teamName,
+      teamId: leader.teamId,
       points: leader.points,
       wins: leader.wins,
     },

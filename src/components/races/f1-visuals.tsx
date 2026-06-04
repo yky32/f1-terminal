@@ -9,9 +9,8 @@ import {
   Wind,
   type LucideIcon,
 } from "lucide-react";
-import type { SessionType } from "@/lib/data/live-session";
-import type { WeekendStatus } from "@/lib/data/live-session";
-import { driverAbbrFromName, getTeamVisual } from "@/lib/f1/team-visuals";
+import type { SessionType, WeekendStatus } from "@/lib/data/live-session";
+import { DriverIcon } from "@/components/races/driver-icon";
 import { TeamIcon } from "@/components/races/team-icon";
 import { cn } from "@/lib/utils";
 
@@ -20,17 +19,25 @@ type VisualSize = "sm" | "md";
 export function TeamBadge({
   teamId,
   teamName,
+  teamLogo,
   showName = true,
   className,
 }: {
   teamId?: number | null;
   teamName: string;
+  teamLogo?: string | null;
   showName?: boolean;
   className?: string;
 }) {
   return (
     <span className={cn("inline-flex min-w-0 items-center gap-2", className)}>
-      <TeamIcon teamId={teamId} teamName={teamName} size="sm" title={teamName} />
+      <TeamIcon
+        teamId={teamId}
+        teamName={teamName}
+        teamLogo={teamLogo}
+        size="md"
+        title={teamName}
+      />
       {showName ? (
         <span className="truncate text-neutral-800">{teamName}</span>
       ) : null}
@@ -39,40 +46,43 @@ export function TeamBadge({
 }
 
 export function DriverAvatar({
+  driverId,
   driverName,
   driverAbbr,
   driverNumber,
+  driverImage,
   teamId,
   teamName,
   size = "sm",
   showName = true,
   className,
 }: {
+  driverId?: number | null;
   driverName: string;
   driverAbbr?: string;
   driverNumber?: number | null;
+  driverImage?: string | null;
   teamId?: number | null;
   teamName?: string | null;
   size?: VisualSize;
   showName?: boolean;
   className?: string;
 }) {
-  const team = getTeamVisual(teamId, teamName);
-  const abbr = driverAbbr ?? driverAbbrFromName(driverName);
-  const label = driverNumber != null ? String(driverNumber) : abbr;
+  const iconSize = size === "sm" ? "md" : "lg";
 
   return (
-    <span className={cn("inline-flex min-w-0 items-center gap-2.5", className)}>
-      <span
-        className={cn(
-          "relative flex shrink-0 items-center justify-center rounded-full font-bold text-white shadow-sm ring-2 ring-white",
-          size === "sm" ? "h-8 w-8 text-[0.625rem]" : "h-9 w-9 text-[0.6875rem]",
-        )}
-        style={{ backgroundColor: team.primary }}
-        aria-hidden
-      >
-        {label}
-      </span>
+    <span className={cn("inline-flex min-w-0 items-center gap-2", className)}>
+      <DriverIcon
+        driverId={driverId}
+        driverName={driverName}
+        driverAbbr={driverAbbr}
+        driverNumber={driverNumber}
+        driverImage={driverImage}
+        teamId={teamId}
+        teamName={teamName}
+        size={iconSize}
+        title={driverName}
+      />
       {showName ? (
         <span className="min-w-0">
           <span className="block truncate font-medium text-neutral-950">{driverName}</span>

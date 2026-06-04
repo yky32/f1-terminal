@@ -19,8 +19,10 @@ export type DriverStandingRow = {
   driverName: string;
   driverAbbr: string;
   driverNumber: number | null;
+  driverImage?: string | null;
   teamId: number;
   teamName: string;
+  teamLogo?: string | null;
   points: number;
   wins: number;
 };
@@ -29,13 +31,17 @@ export type ConstructorStandingRow = {
   position: number;
   teamId: number;
   teamName: string;
+  teamLogo?: string | null;
   points: number;
   wins: number;
 };
 
 export type FastestLapRow = {
   position: number;
+  driverId?: number;
   driverName: string;
+  driverImage?: string | null;
+  teamId?: number;
   teamName: string;
   time: string;
   lap: number;
@@ -43,7 +49,10 @@ export type FastestLapRow = {
 
 export type LapLeaderRow = {
   position: number;
+  driverId?: number;
   driverName: string;
+  driverImage?: string | null;
+  teamId?: number;
   teamName: string;
   gap: string;
   lastLap: string;
@@ -74,8 +83,11 @@ export type RaceCircuitInfo = {
 /** Final classification (rankings/races after session). */
 export type RaceResultRow = {
   position: number;
+  driverId?: number;
   driverName: string;
   driverAbbr: string;
+  driverImage?: string | null;
+  teamId?: number;
   teamName: string;
   grid: number;
   status: string;
@@ -87,6 +99,8 @@ export type DriverPerformanceRow = {
   driverId: number;
   driverName: string;
   driverAbbr: string;
+  driverImage?: string | null;
+  teamId?: number;
   teamName: string;
   grid: number;
   finish: number | null;

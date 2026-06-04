@@ -1,1 +1,1 @@
-export type DataProviderId = "mock" | "apisports";
+export type DataProviderId = "mock" | "api-sports";

@@ -2,32 +2,32 @@ import type { RaceCatalogEntry } from "@/lib/data/race-profile";
 
 export const GLOBAL_SEASON = 2026;
 
-/** 24-round calendar — aligned with API-Sports Races + local circuit coordinates. */
+/** 24-round calendar — apiCompetitionId matches API-Sports /competitions ids. */
 export const SEASON_CALENDAR: RaceCatalogEntry[] = [
   { id: "australian-gp", apiCompetitionId: 1, name: "Australian Grand Prix", shortName: "Australia", country: "Australia", city: "Melbourne", region: "oceania", round: 1, season: GLOBAL_SEASON, weekendStatus: "finished" },
-  { id: "chinese-gp", apiCompetitionId: 2, name: "Chinese Grand Prix", shortName: "China", country: "China", city: "Shanghai", region: "asia", round: 2, season: GLOBAL_SEASON, weekendStatus: "finished" },
-  { id: "japanese-gp", apiCompetitionId: 3, name: "Japanese Grand Prix", shortName: "Japan", country: "Japan", city: "Suzuka", region: "asia", round: 3, season: GLOBAL_SEASON, weekendStatus: "finished" },
-  { id: "bahrain-gp", apiCompetitionId: 4, name: "Bahrain Grand Prix", shortName: "Bahrain", country: "Bahrain", city: "Sakhir", region: "middle-east", round: 4, season: GLOBAL_SEASON, weekendStatus: "finished" },
-  { id: "saudi-arabian-gp", apiCompetitionId: 5, name: "Saudi Arabian Grand Prix", shortName: "Saudi Arabia", country: "Saudi Arabia", city: "Jeddah", region: "middle-east", round: 5, season: GLOBAL_SEASON, weekendStatus: "finished" },
-  { id: "miami-gp", apiCompetitionId: 6, name: "Miami Grand Prix", shortName: "Miami", country: "USA", city: "Miami", region: "americas", round: 6, season: GLOBAL_SEASON, weekendStatus: "finished" },
-  { id: "emilia-romagna-gp", apiCompetitionId: 7, name: "Emilia Romagna Grand Prix", shortName: "Imola", country: "Italy", city: "Imola", region: "europe", round: 7, season: GLOBAL_SEASON, weekendStatus: "finished" },
-  { id: "monaco-gp", apiCompetitionId: 8, name: "Monaco Grand Prix", shortName: "Monaco", country: "Monaco", city: "Monte Carlo", region: "europe", round: 8, season: GLOBAL_SEASON, weekendStatus: "active" },
+  { id: "chinese-gp", apiCompetitionId: 4, name: "Chinese Grand Prix", shortName: "China", country: "China", city: "Shanghai", region: "asia", round: 2, season: GLOBAL_SEASON, weekendStatus: "finished" },
+  { id: "japanese-gp", apiCompetitionId: 19, name: "Japanese Grand Prix", shortName: "Japan", country: "Japan", city: "Suzuka", region: "asia", round: 3, season: GLOBAL_SEASON, weekendStatus: "finished" },
+  { id: "bahrain-gp", apiCompetitionId: 2, name: "Bahrain Grand Prix", shortName: "Bahrain", country: "Bahrain", city: "Sakhir", region: "middle-east", round: 4, season: GLOBAL_SEASON, weekendStatus: "finished" },
+  { id: "saudi-arabian-gp", apiCompetitionId: 32, name: "Saudi Arabian Grand Prix", shortName: "Saudi Arabia", country: "Saudi Arabia", city: "Jeddah", region: "middle-east", round: 5, season: GLOBAL_SEASON, weekendStatus: "finished" },
+  { id: "miami-gp", apiCompetitionId: 34, name: "Miami Grand Prix", shortName: "Miami", country: "USA", city: "Miami", region: "americas", round: 6, season: GLOBAL_SEASON, weekendStatus: "finished" },
+  { id: "emilia-romagna-gp", apiCompetitionId: 29, name: "Emilia Romagna Grand Prix", shortName: "Imola", country: "Italy", city: "Imola", region: "europe", round: 7, season: GLOBAL_SEASON, weekendStatus: "finished" },
+  { id: "monaco-gp", apiCompetitionId: 7, name: "Monaco Grand Prix", shortName: "Monaco", country: "Monaco", city: "Monte Carlo", region: "europe", round: 8, season: GLOBAL_SEASON, weekendStatus: "active" },
   { id: "canadian-gp", apiCompetitionId: 9, name: "Canadian Grand Prix", shortName: "Canada", country: "Canada", city: "Montreal", region: "americas", round: 9, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
-  { id: "spanish-gp", apiCompetitionId: 10, name: "Spanish Grand Prix", shortName: "Spain", country: "Spain", city: "Barcelona", region: "europe", round: 10, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
+  { id: "spanish-gp", apiCompetitionId: 6, name: "Spanish Grand Prix", shortName: "Spain", country: "Spain", city: "Barcelona", region: "europe", round: 10, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
   { id: "austrian-gp", apiCompetitionId: 11, name: "Austrian Grand Prix", shortName: "Austria", country: "Austria", city: "Spielberg", region: "europe", round: 11, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
   { id: "british-gp", apiCompetitionId: 12, name: "British Grand Prix", shortName: "Britain", country: "Great Britain", city: "Silverstone", region: "europe", round: 12, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
-  { id: "belgian-gp", apiCompetitionId: 13, name: "Belgian Grand Prix", shortName: "Belgium", country: "Belgium", city: "Spa", region: "europe", round: 13, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
+  { id: "belgian-gp", apiCompetitionId: 15, name: "Belgian Grand Prix", shortName: "Belgium", country: "Belgium", city: "Spa", region: "europe", round: 13, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
   { id: "hungarian-gp", apiCompetitionId: 14, name: "Hungarian Grand Prix", shortName: "Hungary", country: "Hungary", city: "Budapest", region: "europe", round: 14, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
-  { id: "dutch-gp", apiCompetitionId: 15, name: "Dutch Grand Prix", shortName: "Netherlands", country: "Netherlands", city: "Zandvoort", region: "europe", round: 15, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
+  { id: "dutch-gp", apiCompetitionId: 5, name: "Dutch Grand Prix", shortName: "Netherlands", country: "Netherlands", city: "Zandvoort", region: "europe", round: 15, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
   { id: "italian-gp", apiCompetitionId: 16, name: "Italian Grand Prix", shortName: "Italy", country: "Italy", city: "Monza", region: "europe", round: 16, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
-  { id: "azerbaijan-gp", apiCompetitionId: 17, name: "Azerbaijan Grand Prix", shortName: "Azerbaijan", country: "Azerbaijan", city: "Baku", region: "middle-east", round: 17, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
-  { id: "singapore-gp", apiCompetitionId: 18, name: "Singapore Grand Prix", shortName: "Singapore", country: "Singapore", city: "Singapore", region: "asia", round: 18, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
-  { id: "united-states-gp", apiCompetitionId: 19, name: "United States Grand Prix", shortName: "USA", country: "USA", city: "Austin", region: "americas", round: 19, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
-  { id: "mexican-gp", apiCompetitionId: 20, name: "Mexico City Grand Prix", shortName: "Mexico", country: "Mexico", city: "Mexico City", region: "americas", round: 20, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
-  { id: "brazilian-gp", apiCompetitionId: 21, name: "São Paulo Grand Prix", shortName: "Brazil", country: "Brazil", city: "São Paulo", region: "americas", round: 21, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
-  { id: "las-vegas-gp", apiCompetitionId: 22, name: "Las Vegas Grand Prix", shortName: "Las Vegas", country: "USA", city: "Las Vegas", region: "americas", round: 22, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
-  { id: "qatar-gp", apiCompetitionId: 23, name: "Qatar Grand Prix", shortName: "Qatar", country: "Qatar", city: "Lusail", region: "middle-east", round: 23, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
-  { id: "abu-dhabi-gp", apiCompetitionId: 24, name: "Abu Dhabi Grand Prix", shortName: "Abu Dhabi", country: "UAE", city: "Yas Island", region: "middle-east", round: 24, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
+  { id: "azerbaijan-gp", apiCompetitionId: 8, name: "Azerbaijan Grand Prix", shortName: "Azerbaijan", country: "Azerbaijan", city: "Baku", region: "middle-east", round: 17, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
+  { id: "singapore-gp", apiCompetitionId: 17, name: "Singapore Grand Prix", shortName: "Singapore", country: "Singapore", city: "Singapore", region: "asia", round: 18, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
+  { id: "united-states-gp", apiCompetitionId: 20, name: "United States Grand Prix", shortName: "USA", country: "USA", city: "Austin", region: "americas", round: 19, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
+  { id: "mexican-gp", apiCompetitionId: 21, name: "Mexico City Grand Prix", shortName: "Mexico", country: "Mexico", city: "Mexico City", region: "americas", round: 20, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
+  { id: "brazilian-gp", apiCompetitionId: 22, name: "São Paulo Grand Prix", shortName: "Brazil", country: "Brazil", city: "São Paulo", region: "americas", round: 21, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
+  { id: "las-vegas-gp", apiCompetitionId: 35, name: "Las Vegas Grand Prix", shortName: "Las Vegas", country: "USA", city: "Las Vegas", region: "americas", round: 22, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
+  { id: "qatar-gp", apiCompetitionId: 33, name: "Qatar Grand Prix", shortName: "Qatar", country: "Qatar", city: "Lusail", region: "middle-east", round: 23, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
+  { id: "abu-dhabi-gp", apiCompetitionId: 23, name: "Abu Dhabi Grand Prix", shortName: "Abu Dhabi", country: "UAE", city: "Yas Island", region: "middle-east", round: 24, season: GLOBAL_SEASON, weekendStatus: "upcoming" },
 ];
 
 export type SeasonCircuitGeo = {

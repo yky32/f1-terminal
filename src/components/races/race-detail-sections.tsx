@@ -206,14 +206,17 @@ export function RaceResultsSection({ race }: { race: RaceProfile }) {
                 </td>
                 <td className="px-4 py-2.5">
                   <DriverAvatar
+                    driverId={row.driverId}
                     driverName={row.driverName}
                     driverAbbr={row.driverAbbr}
+                    driverImage={row.driverImage}
+                    teamId={row.teamId}
                     teamName={row.teamName}
                     showName
                   />
                 </td>
                 <td className="hidden px-4 py-2.5 sm:table-cell">
-                  <TeamBadge teamName={row.teamName} />
+                  <TeamBadge teamId={row.teamId} teamName={row.teamName} />
                 </td>
                 <td className="px-4 py-2.5 tabular-nums text-neutral-700">{row.grid}</td>
                 <td className="px-4 py-2.5 text-neutral-600">{row.status}</td>
@@ -291,14 +294,17 @@ export function RaceDriverPerformanceSection({
                 ) : null}
                 <td className="px-4 py-2.5">
                   <DriverAvatar
+                    driverId={row.driverId}
                     driverName={row.driverName}
                     driverAbbr={row.driverAbbr}
+                    driverImage={row.driverImage}
+                    teamId={row.teamId}
                     teamName={row.teamName}
                     showName
                   />
                 </td>
                 <td className="hidden px-4 py-2.5 md:table-cell">
-                  <TeamBadge teamName={row.teamName} />
+                  <TeamBadge teamId={row.teamId} teamName={row.teamName} />
                 </td>
                 {showFinish ? (
                   <>

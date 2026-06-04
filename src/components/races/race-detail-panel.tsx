@@ -325,16 +325,18 @@ function DriverStandingsTable({
               </td>
               <td className="px-4 py-2.5">
                 <DriverAvatar
+                  driverId={row.driverId}
                   driverName={row.driverName}
                   driverAbbr={row.driverAbbr}
                   driverNumber={row.driverNumber}
+                  driverImage={row.driverImage}
                   teamId={row.teamId}
                   teamName={row.teamName}
                   showName
                 />
               </td>
               <td className="hidden px-4 py-2.5 sm:table-cell">
-                <TeamBadge teamId={row.teamId} teamName={row.teamName} />
+                <TeamBadge teamId={row.teamId} teamName={row.teamName} teamLogo={row.teamLogo} />
               </td>
               <td className="px-4 py-2.5 font-semibold tabular-nums text-neutral-950">
                 {row.points}
@@ -378,7 +380,7 @@ function ConstructorStandingsTable({
                       style={{ backgroundColor: team.primary }}
                       aria-hidden
                     />
-                    <TeamBadge teamId={row.teamId} teamName={row.teamName} />
+                    <TeamBadge teamId={row.teamId} teamName={row.teamName} teamLogo={row.teamLogo} />
                   </span>
                 </td>
                 <td className="px-4 py-2.5 font-semibold tabular-nums text-neutral-950">
@@ -532,8 +534,11 @@ function LapLeadersTable({ rows }: { rows: RaceProfile["lapLeaders"] }) {
               </td>
               <td className="px-4 py-2.5">
                 <DriverAvatar
+                  driverId={row.driverId}
                   driverName={row.driverName}
                   driverAbbr={driverAbbrFromName(row.driverName)}
+                  driverImage={row.driverImage}
+                  teamId={row.teamId}
                   teamName={row.teamName}
                   showName
                 />
@@ -586,8 +591,11 @@ function FastestLapsTable({ rows }: { rows: RaceProfile["fastestLaps"] }) {
               </td>
               <td className="px-4 py-2.5">
                 <DriverAvatar
+                  driverId={row.driverId}
                   driverName={row.driverName}
                   driverAbbr={driverAbbrFromName(row.driverName)}
+                  driverImage={row.driverImage}
+                  teamId={row.teamId}
                   teamName={row.teamName}
                   showName
                 />

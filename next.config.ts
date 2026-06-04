@@ -5,12 +5,17 @@ const nextConfig: NextConfig = {
     root: process.cwd(),
   },
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-      },
-    ],
+  remotePatterns: [
+    {
+      protocol: "https",
+      hostname: "images.unsplash.com",
+    },
+    {
+      protocol: "https",
+      hostname: "media.api-sports.io",
+      pathname: "/formula-1/**",
+    },
+  ],
   },
 };
 

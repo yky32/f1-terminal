@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useGlobalOverview } from "@/components/overview/global-overview-context";
 import { glass, glassFocus, glassHover } from "@/components/glass-surface";
 import { TeamBadge } from "@/components/races/f1-visuals";
+import { DriverIcon } from "@/components/races/driver-icon";
+import { TeamIcon } from "@/components/races/team-icon";
 import { cn } from "@/lib/utils";
 
 export function GlobalStandingsSection() {
@@ -31,8 +33,8 @@ export function GlobalStandingsSection() {
           </Link>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-          <div className={cn(glass, "overflow-hidden")}>
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(11rem,16rem)]">
+          <div className={cn(glass, "min-w-0 overflow-hidden")}>
             <div className="border-b border-black/[0.06] px-4 py-3">
               <h3 className="text-[0.875rem] font-semibold text-neutral-950">
                 Driver standings · Top 10
@@ -67,16 +69,30 @@ export function GlobalStandingsSection() {
                             {row.position}
                           </td>
                           <td className="px-2 py-2.5">
-                            <span className="font-semibold text-neutral-950">{row.driverName}</span>
-                            <span className="ml-1.5 font-medium tabular-nums text-neutral-500">
-                              {row.driverAbbr}
+                            <span className="inline-flex min-w-0 items-center gap-2">
+                              <DriverIcon
+                                driverId={row.driverId}
+                                driverName={row.driverName}
+                                driverAbbr={row.driverAbbr}
+                                driverNumber={row.driverNumber}
+                                driverImage={row.driverImage}
+                                teamId={row.teamId}
+                                teamName={row.teamName}
+                                size="md"
+                              />
+                              <span className="min-w-0">
+                                <span className="font-semibold text-neutral-950">{row.driverName}</span>
+                                <span className="ml-1.5 font-medium tabular-nums text-neutral-500">
+                                  {row.driverAbbr}
+                                </span>
+                              </span>
                             </span>
                           </td>
                           <td className="px-2 py-2.5">
                             <TeamBadge
                               teamId={row.teamId}
                               teamName={row.teamName}
-                              className="max-w-[8rem] sm:max-w-none"
+                              teamLogo={row.teamLogo}
                             />
                           </td>
                           <td className="px-4 py-2.5 text-right font-semibold tabular-nums text-neutral-950">
@@ -89,30 +105,39 @@ export function GlobalStandingsSection() {
             </div>
           </div>
 
-          <aside className={cn(glass, "flex flex-col overflow-hidden")}>
-            <div className="border-b border-black/[0.06] px-4 py-3">
-              <h3 className="text-[0.875rem] font-semibold text-neutral-950">
+          <aside className={cn(glass, "flex min-w-0 flex-col overflow-hidden lg:max-w-[16rem] lg:justify-self-end lg:w-full")}>
+            <div className="border-b border-black/[0.06] px-3 py-2">
+              <h3 className="text-[0.8125rem] font-semibold text-neutral-950">
                 Constructor standings
               </h3>
-              <p className="mt-0.5 text-[0.6875rem] text-neutral-500">API-Sports · Rankings / teams</p>
+              <p className="mt-0.5 text-[0.625rem] text-neutral-500">API-Sports · Rankings / teams</p>
             </div>
-            <ul className="divide-y divide-black/[0.05] text-[0.8125rem]">
+            <ul className="divide-y divide-black/[0.05] text-[0.75rem]">
               {loading
                 ? Array.from({ length: 5 }).map((_, index) => (
-                    <li key={index} className="px-4 py-2.5">
-                      <div className="h-4 animate-pulse rounded bg-black/[0.05]" />
+                    <li key={index} className="px-3 py-2">
+                      <div className="h-3.5 animate-pulse rounded bg-black/[0.05]" />
                     </li>
                   ))
                 : constructors.map((row) => (
                     <li
                       key={row.teamId}
-                      className="flex items-center justify-between gap-3 px-4 py-2.5"
+                      className="flex items-center justify-between gap-2 px-3 py-2"
                     >
-                      <div className="flex min-w-0 items-center gap-2.5">
-                        <span className="w-5 shrink-0 tabular-nums text-neutral-500">
+                      <div className="flex min-w-0 items-center gap-2">
+                        <span className="w-4 shrink-0 tabular-nums text-neutral-500">
                           {row.position}
                         </span>
-                        <TeamBadge teamId={row.teamId} teamName={row.teamName} />
+                        <span className="inline-flex min-w-0 items-center gap-1.5">
+                          <TeamIcon
+                            teamId={row.teamId}
+                            teamName={row.teamName}
+                            teamLogo={row.teamLogo}
+                            size="sm"
+                            title={row.teamName}
+                          />
+                          <span className="truncate text-neutral-800">{row.teamName}</span>
+                        </span>
                       </div>
                       <span className="shrink-0 font-semibold tabular-nums text-neutral-950">
                         {row.points}

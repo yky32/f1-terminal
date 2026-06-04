@@ -3,6 +3,7 @@
 import { Globe2, MonitorDot, Trophy, type LucideIcon } from "lucide-react";
 import { useGlobalOverview } from "@/components/overview/global-overview-context";
 import { glassFocus, glassHover, glassInset } from "@/components/glass-surface";
+import { DriverIcon } from "@/components/races/driver-icon";
 import { TeamIcon } from "@/components/races/team-icon";
 import { scrollToSection } from "@/lib/scroll-to-section";
 import { cn } from "@/lib/utils";
@@ -67,14 +68,28 @@ export function GlobalHeroBanner() {
               <span className="text-[0.8125rem] text-neutral-600" aria-hidden>
                 ·
               </span>
-              <span className="text-[0.8125rem] font-medium text-neutral-900">
+              <span className="inline-flex items-center gap-1.5 text-[0.8125rem] font-medium text-neutral-900">
+                <DriverIcon
+                  driverId={championship.driverId}
+                  driverName={championship.driverName}
+                  driverAbbr={championship.driverAbbr}
+                  driverImage={championship.driverImage}
+                  teamId={championship.teamId}
+                  teamName={championship.teamName}
+                  size="sm"
+                />
                 {championship.driverName}{" "}
                 <span className="font-semibold tabular-nums text-neutral-950">
                   {championship.points} pts
                 </span>
               </span>
               <span className="inline-flex items-center gap-1.5 text-[0.75rem] text-neutral-500">
-                <TeamIcon teamName={championship.teamName} size="xs" />
+                <TeamIcon
+                  teamId={championship.teamId}
+                  teamName={championship.teamName}
+                  teamLogo={championship.teamLogo}
+                  size="sm"
+                />
                 {championship.teamName} · {championship.wins} wins
               </span>
             </div>
