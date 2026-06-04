@@ -110,21 +110,20 @@ export function RaceCalendarItem({
 function timelineCardSurface(status: WeekendStatus, active: boolean, emphasized = false) {
   if (active) {
     return cn(
-      "border-neutral-900/14 bg-white/92 shadow-[0_10px_28px_rgba(15,23,42,0.08)]",
-      emphasized &&
-        "border-neutral-900/18 bg-white ring-1 ring-neutral-900/10",
+      "border-neutral-900/14 bg-white/95 shadow-[0_10px_28px_rgba(15,23,42,0.08)]",
+      emphasized && "border-neutral-900/18 ring-1 ring-neutral-900/10",
     );
   }
 
   if (status === "finished") {
-    return "border-emerald-900/10 bg-gradient-to-br from-emerald-500/[0.07] via-white/45 to-white/35 opacity-90 group-hover:border-emerald-800/16 group-hover:from-emerald-500/[0.1] group-hover:opacity-100";
+    return "border-emerald-900/10 bg-gradient-to-br from-emerald-500/[0.07] via-white/88 to-white/76 opacity-95 group-hover:border-emerald-800/16 group-hover:from-emerald-500/[0.1] group-hover:opacity-100";
   }
 
   if (status === "active") {
-    return "border-red-500/25 bg-gradient-to-br from-red-500/[0.08] via-white/70 to-white/55 shadow-[0_0_20px_rgba(239,68,68,0.08)] group-hover:border-red-500/35 group-hover:from-red-500/[0.11]";
+    return "border-red-500/25 bg-gradient-to-br from-red-500/[0.08] via-white/92 to-white/82 shadow-[0_0_20px_rgba(239,68,68,0.08)] group-hover:border-red-500/35 group-hover:from-red-500/[0.11]";
   }
 
-  return "border-dashed border-black/[0.1] bg-white/20 group-hover:border-black/[0.14] group-hover:bg-white/45";
+  return "border-dashed border-black/[0.1] bg-white/72 group-hover:border-black/[0.14] group-hover:bg-white/88";
 }
 
 function timelineAccentBar(status: WeekendStatus, active: boolean) {
@@ -212,7 +211,7 @@ function RoundNode({
             ? "bg-emerald-500/12 text-emerald-700 ring-emerald-500/20"
             : live
               ? "bg-white text-red-700 ring-red-500/30"
-              : "bg-white/40 text-neutral-500",
+              : "bg-white/75 text-neutral-500",
       )}
     >
       {future && !active ? (

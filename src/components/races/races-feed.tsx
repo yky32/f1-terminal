@@ -125,7 +125,7 @@ export function RacesFeed({
   );
 
   return (
-    <div className="page-container pb-12">
+    <div className="races-page-root page-container pb-12">
       <div
         className={cn(
           "grid grid-cols-1 gap-5 lg:items-start",
@@ -135,7 +135,6 @@ export function RacesFeed({
       >
         <aside
           className={cn(
-            racesGlass,
             "min-w-0 overflow-hidden lg:sticky lg:top-[5.5rem]",
             shellMotion,
             calendarCollapsed
@@ -146,7 +145,8 @@ export function RacesFeed({
         >
           <div
             className={cn(
-              "flex max-h-[40rem] w-full flex-col p-3 lg:max-h-[calc(100vh-6.5rem)] lg:w-[19.5rem] lg:min-w-[19.5rem]",
+              racesGlass,
+              "flex max-h-[40rem] w-full flex-col overflow-hidden p-3 lg:max-h-[calc(100vh-6.5rem)] lg:w-[19.5rem] lg:min-w-[19.5rem]",
               panelMotion,
               calendarCollapsed
                 ? "pointer-events-none -translate-x-2 scale-[0.985] opacity-0 delay-0"
