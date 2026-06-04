@@ -1,12 +1,29 @@
 "use client";
 
+import {
+  CalendarDays,
+  CloudSun,
+  Flag,
+  Timer,
+  Trophy,
+  Users,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import {
+  DataPresenceBadge,
+  DriverAvatar,
+  EmptyDataState,
+  PositionBadge,
+  SessionTypeIcon,
+  TeamBadge,
+} from "@/components/races/f1-visuals";
 import {
   racesGlass,
   racesGlassFocus,
 } from "@/components/races/races-glass";
 import type { RaceProfile } from "@/lib/data/race-profile";
 import { sessionCountdownLabel } from "@/lib/data/live-session";
+import { driverAbbrFromName, getTeamVisual } from "@/lib/f1/team-visuals";
 import { cn } from "@/lib/utils";
 
 type RaceDetailTab = "overview" | "practice" | "qualifying" | "race";
@@ -44,6 +61,8 @@ export function RaceDetailPanel({ race, loading = false }: RaceDetailPanelProps)
   }, [race.id]);
 
   const tabSessions = useMemo(() => sessionsForTab(race, tab), [race, tab]);
+  const hasStandings =
+    race.driverStandings.length > 0 || race.constructorStandings.length > 0;
 
   if (loading) {
     return <div className="h-80 animate-pulse rounded-[1.25rem] bg-black/[0.05]" aria-busy="true" />;
@@ -82,58 +101,79 @@ export function RaceDetailPanel({ race, loading = false }: RaceDetailPanelProps)
       {tab === "overview" ? (
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:items-start">
           <section className={cn(racesGlass, "overflow-hidden")}>
-            <SectionHeader title="Driver standings" meta={`After round ${Math.max(race.round - 1, 0)}`} />
-            <StandingsTable
-              headers={["Pos", "Driver", "Team", "Pts"]}
-              rows={race.driverStandings.map((row) => [
-                String(row.position),
-                row.driverName,
-                row.teamName,
-                String(row.points),
-              ])}
+            <SectionHeader
+              icon={Users}
+              title="Driver standings"
+              meta={`After round ${Math.max(race.round - 1, 0)}`}
+              badge={
+                race.driverStandings.length > 0 ? (
+                  <DataPresenceBadge label={`${race.driverStandings.length} drivers`} />
+                ) : null
+              }
             />
+            {race.driverStandings.length > 0 ? (
+              <DriverStandingsTable rows={race.driverStandings} />
+            ) : (
+              <EmptyDataState
+                icon={Trophy}
+                title="Standings loading"
+                description="Driver points will appear once this weekend's data is fetched."
+              />
+            )}
           </section>
 
           <section className={cn(racesGlass, "overflow-hidden")}>
-            <SectionHeader title="Constructor standings" meta={`${race.season} season`} />
-            <StandingsTable
-              headers={["Pos", "Team", "Pts"]}
-              rows={race.constructorStandings.map((row) => [
-                String(row.position),
-                row.teamName,
-                String(row.points),
-              ])}
+            <SectionHeader
+              icon={Flag}
+              title="Constructor standings"
+              meta={`${race.season} season`}
+              badge={
+                race.constructorStandings.length > 0 ? (
+                  <DataPresenceBadge label={`${race.constructorStandings.length} teams`} />
+                ) : null
+              }
             />
+            {race.constructorStandings.length > 0 ? (
+              <ConstructorStandingsTable rows={race.constructorStandings} />
+            ) : (
+              <EmptyDataState
+                icon={Flag}
+                title="No constructor data"
+                description="Team points will populate when race detail loads."
+              />
+            )}
           </section>
 
           {race.lapLeaders.length > 0 ? (
             <section className={cn(racesGlass, "overflow-hidden lg:col-span-2")}>
-              <SectionHeader title="On-track leaders" meta="Live timing snapshot" />
-              <StandingsTable
-                headers={["Pos", "Driver", "Team", "Gap", "Last lap"]}
-                rows={race.lapLeaders.map((row) => [
-                  String(row.position),
-                  row.driverName,
-                  row.teamName,
-                  row.gap,
-                  row.lastLap,
-                ])}
+              <SectionHeader
+                icon={Trophy}
+                title="On-track leaders"
+                meta="Live timing snapshot"
+                badge={<DataPresenceBadge label="Live" />}
               />
+              <LapLeadersTable rows={race.lapLeaders} />
             </section>
           ) : null}
 
           {race.weather ? (
             <section className={cn(racesGlass, "p-4 lg:col-span-2")}>
-              <SectionHeader title="Weather & strategy layer" meta="Track conditions" />
+              <SectionHeader
+                icon={CloudSun}
+                title="Weather & strategy layer"
+                meta={race.weather.condition}
+                badge={<DataPresenceBadge label="Track data" />}
+              />
               <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 {[
-                  { label: "Air", value: `${race.weather.airTempC}°C` },
-                  { label: "Track", value: `${race.weather.trackTempC}°C` },
-                  { label: "Rain chance", value: `${race.weather.rainProbability}%` },
-                  { label: "Wind", value: race.weather.wind },
+                  { label: "Air", value: `${race.weather.airTempC}°C`, icon: CloudSun },
+                  { label: "Track", value: `${race.weather.trackTempC}°C`, icon: Flag },
+                  { label: "Rain chance", value: `${race.weather.rainProbability}%`, icon: CloudSun },
+                  { label: "Wind", value: race.weather.wind, icon: CloudSun },
                 ].map((item) => (
                   <div key={item.label} className="rounded-[1rem] bg-black/[0.03] px-3 py-3">
-                    <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em] text-neutral-500">
+                    <p className="flex items-center gap-1.5 text-[0.6875rem] font-semibold uppercase tracking-[0.08em] text-neutral-500">
+                      <item.icon className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
                       {item.label}
                     </p>
                     <p className="mt-1 text-[0.9375rem] font-semibold text-neutral-950">{item.value}</p>
@@ -142,97 +182,283 @@ export function RaceDetailPanel({ race, loading = false }: RaceDetailPanelProps)
               </div>
             </section>
           ) : null}
+
+          {!hasStandings && race.sessions.length === 0 && !race.weather ? (
+            <section className={cn(racesGlass, "lg:col-span-2")}>
+              <EmptyDataState
+                icon={CalendarDays}
+                title="Weekend data pending"
+                description="Select an active Grand Prix or wait for the detail panel to finish loading."
+              />
+            </section>
+          ) : null}
         </div>
       ) : (
         <section className={cn(racesGlass, "overflow-hidden")}>
           <SectionHeader
+            icon={CalendarDays}
             title={`${TABS.find((item) => item.id === tab)?.label ?? "Sessions"} schedule`}
             meta={`${tabSessions.length} session${tabSessions.length === 1 ? "" : "s"}`}
+            badge={
+              tabSessions.length > 0 ? (
+                <DataPresenceBadge label={`${tabSessions.length} scheduled`} />
+              ) : null
+            }
           />
-          <div className="divide-y divide-black/[0.06]">
-            {tabSessions.map((session) => (
-              <div key={session.id} className="flex items-center justify-between gap-4 px-4 py-3">
-                <div>
-                  <p className="text-[0.875rem] font-semibold text-neutral-950">{session.typeLabel}</p>
-                  <p className="text-[0.75rem] text-neutral-600">
-                    {new Date(session.date).toLocaleString(undefined, {
-                      weekday: "short",
-                      month: "short",
-                      day: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </p>
+          {tabSessions.length > 0 ? (
+            <div className="divide-y divide-black/[0.06]">
+              {tabSessions.map((session) => (
+                <div key={session.id} className="flex items-center justify-between gap-4 px-4 py-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <SessionTypeIcon type={session.type} />
+                    <div className="min-w-0">
+                      <p className="text-[0.875rem] font-semibold text-neutral-950">
+                        {session.typeLabel}
+                      </p>
+                      <p className="text-[0.75rem] text-neutral-600">
+                        {new Date(session.date).toLocaleString(undefined, {
+                          weekday: "short",
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                  <span
+                    className={cn(
+                      "rounded-full px-2.5 py-1 text-[0.625rem] font-semibold uppercase tracking-[0.08em]",
+                      session.status === "Live"
+                        ? "bg-red-500/15 text-red-700"
+                        : session.status === "Completed"
+                          ? "bg-emerald-500/10 text-emerald-700"
+                          : "bg-neutral-900/8 text-neutral-600",
+                    )}
+                  >
+                    {session.status === "Scheduled"
+                      ? sessionCountdownLabel(session.date)
+                      : session.status}
+                  </span>
                 </div>
-                <span
-                  className={cn(
-                    "rounded-full px-2.5 py-1 text-[0.625rem] font-semibold uppercase tracking-[0.08em]",
-                    session.status === "Live"
-                      ? "bg-red-500/15 text-red-700"
-                      : session.status === "Completed"
-                        ? "bg-emerald-500/10 text-emerald-700"
-                        : "bg-neutral-900/8 text-neutral-600",
-                  )}
-                >
-                  {session.status === "Scheduled"
-                    ? sessionCountdownLabel(session.date)
-                    : session.status}
-                </span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <EmptyDataState
+              icon={CalendarDays}
+              title="No sessions in this tab"
+              description="Try another tab or pick a race weekend with scheduled running."
+            />
+          )}
         </section>
       )}
 
       {race.fastestLaps.length > 0 ? (
         <section className={cn(racesGlass, "overflow-hidden")}>
-          <SectionHeader title="Fastest laps" meta="Practice snapshot" />
-          <StandingsTable
-            headers={["Pos", "Driver", "Team", "Time", "Lap"]}
-            rows={race.fastestLaps.map((row) => [
-              String(row.position),
-              row.driverName,
-              row.teamName,
-              row.time,
-              String(row.lap),
-            ])}
+          <SectionHeader
+            icon={Timer}
+            title="Fastest laps"
+            meta="Practice snapshot"
+            badge={<DataPresenceBadge label={`${race.fastestLaps.length} laps`} />}
           />
+          <FastestLapsTable rows={race.fastestLaps} />
         </section>
       ) : null}
     </div>
   );
 }
 
-function SectionHeader({ title, meta }: { title: string; meta: string }) {
+function SectionHeader({
+  icon: Icon,
+  title,
+  meta,
+  badge,
+}: {
+  icon: typeof Users;
+  title: string;
+  meta: string;
+  badge?: React.ReactNode;
+}) {
   return (
-    <div className="border-b border-black/[0.06] px-4 py-3">
-      <h3 className="text-[0.9375rem] font-semibold text-neutral-950">{title}</h3>
-      <p className="mt-0.5 text-[0.75rem] text-neutral-500">{meta}</p>
+    <div className="flex items-start justify-between gap-3 border-b border-black/[0.06] px-4 py-3">
+      <div className="flex min-w-0 items-start gap-3">
+        <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-black/[0.04] text-neutral-600">
+          <Icon className="h-4 w-4" strokeWidth={2} aria-hidden />
+        </span>
+        <div className="min-w-0">
+          <h3 className="text-[0.9375rem] font-semibold text-neutral-950">{title}</h3>
+          <p className="mt-0.5 flex items-center gap-1.5 text-[0.75rem] text-neutral-500">
+            {meta}
+          </p>
+        </div>
+      </div>
+      {badge ? <div className="shrink-0 pt-1">{badge}</div> : null}
     </div>
   );
 }
 
-function StandingsTable({ headers, rows }: { headers: string[]; rows: string[][] }) {
+function DriverStandingsTable({
+  rows,
+}: {
+  rows: RaceProfile["driverStandings"];
+}) {
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full text-left text-[0.8125rem]">
         <thead className="bg-black/[0.03] text-[0.6875rem] uppercase tracking-[0.08em] text-neutral-500">
           <tr>
-            {headers.map((header) => (
-              <th key={header} className="px-4 py-2 font-semibold">
-                {header}
-              </th>
-            ))}
+            <th className="px-4 py-2 font-semibold">Pos</th>
+            <th className="px-4 py-2 font-semibold">Driver</th>
+            <th className="hidden px-4 py-2 font-semibold sm:table-cell">Team</th>
+            <th className="px-4 py-2 font-semibold">Pts</th>
           </tr>
         </thead>
         <tbody>
-          {rows.map((row, index) => (
-            <tr key={`${row[0]}-${index}`} className="border-t border-black/[0.05]">
-              {row.map((cell, cellIndex) => (
-                <td key={`${cell}-${cellIndex}`} className="px-4 py-2.5 text-neutral-800">
-                  {cell}
+          {rows.map((row) => (
+            <tr key={row.driverId} className="border-t border-black/[0.05]">
+              <td className="px-4 py-2.5">
+                <PositionBadge position={row.position} />
+              </td>
+              <td className="px-4 py-2.5">
+                <DriverAvatar
+                  driverName={row.driverName}
+                  driverAbbr={row.driverAbbr}
+                  driverNumber={row.driverNumber}
+                  teamId={row.teamId}
+                  teamName={row.teamName}
+                  showName
+                />
+              </td>
+              <td className="hidden px-4 py-2.5 sm:table-cell">
+                <TeamBadge teamId={row.teamId} teamName={row.teamName} />
+              </td>
+              <td className="px-4 py-2.5 font-semibold tabular-nums text-neutral-950">
+                {row.points}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function ConstructorStandingsTable({
+  rows,
+}: {
+  rows: RaceProfile["constructorStandings"];
+}) {
+  return (
+    <div className="overflow-x-auto">
+      <table className="min-w-full text-left text-[0.8125rem]">
+        <thead className="bg-black/[0.03] text-[0.6875rem] uppercase tracking-[0.08em] text-neutral-500">
+          <tr>
+            <th className="px-4 py-2 font-semibold">Pos</th>
+            <th className="px-4 py-2 font-semibold">Team</th>
+            <th className="px-4 py-2 font-semibold">Pts</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => {
+            const team = getTeamVisual(row.teamId, row.teamName);
+
+            return (
+              <tr key={row.teamId} className="border-t border-black/[0.05]">
+                <td className="px-4 py-2.5">
+                  <PositionBadge position={row.position} />
                 </td>
-              ))}
+                <td className="px-4 py-2.5">
+                  <span className="inline-flex min-w-0 items-center gap-2.5">
+                    <span
+                      className="h-8 w-1.5 shrink-0 rounded-full"
+                      style={{ backgroundColor: team.primary }}
+                      aria-hidden
+                    />
+                    <TeamBadge teamId={row.teamId} teamName={row.teamName} />
+                  </span>
+                </td>
+                <td className="px-4 py-2.5 font-semibold tabular-nums text-neutral-950">
+                  {row.points}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function LapLeadersTable({ rows }: { rows: RaceProfile["lapLeaders"] }) {
+  return (
+    <div className="overflow-x-auto">
+      <table className="min-w-full text-left text-[0.8125rem]">
+        <thead className="bg-black/[0.03] text-[0.6875rem] uppercase tracking-[0.08em] text-neutral-500">
+          <tr>
+            <th className="px-4 py-2 font-semibold">Pos</th>
+            <th className="px-4 py-2 font-semibold">Driver</th>
+            <th className="hidden px-4 py-2 font-semibold md:table-cell">Gap</th>
+            <th className="px-4 py-2 font-semibold">Last lap</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr key={`${row.position}-${row.driverName}`} className="border-t border-black/[0.05]">
+              <td className="px-4 py-2.5">
+                <PositionBadge position={row.position} />
+              </td>
+              <td className="px-4 py-2.5">
+                <DriverAvatar
+                  driverName={row.driverName}
+                  driverAbbr={driverAbbrFromName(row.driverName)}
+                  teamName={row.teamName}
+                  showName
+                />
+              </td>
+              <td className="hidden px-4 py-2.5 font-medium tabular-nums text-neutral-700 md:table-cell">
+                {row.gap}
+              </td>
+              <td className="px-4 py-2.5 font-medium tabular-nums text-neutral-950">
+                {row.lastLap}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function FastestLapsTable({ rows }: { rows: RaceProfile["fastestLaps"] }) {
+  return (
+    <div className="overflow-x-auto">
+      <table className="min-w-full text-left text-[0.8125rem]">
+        <thead className="bg-black/[0.03] text-[0.6875rem] uppercase tracking-[0.08em] text-neutral-500">
+          <tr>
+            <th className="px-4 py-2 font-semibold">Pos</th>
+            <th className="px-4 py-2 font-semibold">Driver</th>
+            <th className="px-4 py-2 font-semibold">Time</th>
+            <th className="px-4 py-2 font-semibold">Lap</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr key={`${row.position}-${row.driverName}`} className="border-t border-black/[0.05]">
+              <td className="px-4 py-2.5">
+                <PositionBadge position={row.position} />
+              </td>
+              <td className="px-4 py-2.5">
+                <DriverAvatar
+                  driverName={row.driverName}
+                  driverAbbr={driverAbbrFromName(row.driverName)}
+                  teamName={row.teamName}
+                  showName
+                />
+              </td>
+              <td className="px-4 py-2.5 font-semibold tabular-nums text-neutral-950">
+                {row.time}
+              </td>
+              <td className="px-4 py-2.5 tabular-nums text-neutral-700">{row.lap}</td>
             </tr>
           ))}
         </tbody>

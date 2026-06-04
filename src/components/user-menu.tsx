@@ -310,7 +310,7 @@ export function UserMenu() {
         className={cn(
           glassInset,
           glassFocus,
-          "flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-neutral-700 transition-colors hover:text-neutral-950",
+          "flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-neutral-700 transition-colors hover:text-neutral-950",
         )}
       >
         <CircleUser className="h-[1.25rem] w-[1.25rem]" strokeWidth={1.75} aria-hidden />

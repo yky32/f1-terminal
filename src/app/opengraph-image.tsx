@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { brandLogoMarkDataUrl } from "@/lib/brand-logo-mark";
 import { PRODUCT_NAME, SITE_DESCRIPTION } from "@/lib/metadata";
 
 export const alt = PRODUCT_NAME;
@@ -22,31 +23,12 @@ export default function OpenGraphImage() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-          <div
-            style={{
-              width: 56,
-              height: 56,
-              borderRadius: 14,
-              background: "#000",
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 6,
-              padding: 14,
-            }}
-          >
-            {[0.95, 0.75, 0.75, 0.55].map((opacity, index) => (
-              <div
-                key={index}
-                style={{
-                  width: 12,
-                  height: 12,
-                  borderRadius: 3,
-                  background: "#fff",
-                  opacity,
-                }}
-              />
-            ))}
-          </div>
+          <img
+            src={brandLogoMarkDataUrl({ ink: "#f8fafc" })}
+            alt=""
+            width={64}
+            height={64}
+          />
           <span style={{ fontSize: 36, fontWeight: 700, letterSpacing: "-0.02em" }}>
             {PRODUCT_NAME}
           </span>
@@ -62,7 +44,7 @@ export default function OpenGraphImage() {
             letterSpacing: "-0.03em",
           }}
         >
-          Liquid-glass terminal template
+          Monitor F1 everywhere.
         </p>
 
         <p style={{ margin: 0, fontSize: 28, lineHeight: 1.4, color: "#94a3b8" }}>

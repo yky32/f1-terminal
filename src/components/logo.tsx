@@ -15,17 +15,20 @@ export function Logo({ showText = true, size = "default" }: LogoProps) {
     <Link
       href="/"
       className={cn(
-        "flex min-w-0 shrink items-center transition-opacity hover:opacity-80",
-        compact ? "gap-2" : "gap-2.5 sm:gap-3.5",
+        "flex h-10 min-w-0 shrink items-center transition-opacity hover:opacity-80",
+        compact ? "gap-2" : "gap-2.5 sm:gap-3",
       )}
     >
       <LogoIcon
-        className={cn("shrink-0", compact ? "h-7 w-7" : "h-9 w-9 sm:h-10 sm:w-10")}
+        className={cn(
+          "shrink-0 -translate-y-px",
+          compact ? "h-7 w-7" : "h-10 w-10",
+        )}
       />
       {showText ? (
         <span
           className={cn(
-            "truncate font-semibold tracking-[-0.03em] text-foreground",
+            "truncate font-semibold leading-none tracking-[-0.03em] text-foreground",
             compact ? "text-[0.875rem] tracking-[-0.02em]" : "text-label",
           )}
         >

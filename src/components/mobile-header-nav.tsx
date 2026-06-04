@@ -40,7 +40,7 @@ export function MobileHeaderNav({ pathname, className }: MobileHeaderNavProps) {
   if (!useMenu) {
     return (
       <nav
-        className={cn("flex shrink-0 items-center", className)}
+        className={cn("flex h-10 shrink-0 items-center", className)}
         aria-label="Main navigation"
       >
         {mainNav.map((item, index) => {
@@ -50,7 +50,7 @@ export function MobileHeaderNav({ pathname, className }: MobileHeaderNavProps) {
             <Fragment key={item.href}>
               {index > 0 ? (
                 <span
-                  className="px-1.5 text-[0.8125rem] font-medium text-neutral-300"
+                  className="inline-flex h-10 items-center px-1.5 text-[0.8125rem] font-medium leading-none text-neutral-300"
                   aria-hidden
                 >
                   |
@@ -60,7 +60,7 @@ export function MobileHeaderNav({ pathname, className }: MobileHeaderNavProps) {
                 href={item.href}
                 className={cn(
                   glassFocus,
-                  "rounded-sm px-0.5 text-[0.8125rem] font-medium tracking-[-0.01em] transition-colors",
+                  "inline-flex h-10 items-center rounded-sm px-0.5 text-[0.8125rem] font-medium leading-none tracking-[-0.01em] transition-colors",
                   isActive
                     ? "text-foreground"
                     : "text-muted hover:text-foreground",
@@ -77,7 +77,7 @@ export function MobileHeaderNav({ pathname, className }: MobileHeaderNavProps) {
   }
 
   return (
-    <div className={cn("relative shrink-0", className)}>
+    <div className={cn("relative flex h-10 shrink-0 items-center", className)}>
       <button
         type="button"
         onClick={() => setMenuOpen((open) => !open)}
@@ -87,7 +87,7 @@ export function MobileHeaderNav({ pathname, className }: MobileHeaderNavProps) {
         className={cn(
           glassInset,
           glassFocus,
-          "flex h-9 w-9 items-center justify-center rounded-full text-neutral-700 transition-colors hover:text-neutral-950",
+          "flex h-10 w-10 items-center justify-center rounded-full text-neutral-700 transition-colors hover:text-neutral-950",
         )}
       >
         {menuOpen ? (

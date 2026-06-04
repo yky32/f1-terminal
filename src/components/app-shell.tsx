@@ -52,7 +52,7 @@ function AppShellFrame({ children }: { children: React.ReactNode }) {
           <div className="page-container flex h-[4.25rem] items-center justify-between gap-3">
             <Logo />
 
-            <div className="flex shrink-0 items-center gap-3">
+            <div className="flex shrink-0 items-center gap-2 sm:gap-3">
               <nav className="hidden items-center gap-1 md:flex">
                 {mainNav.map((item) => {
                   const isActive =
@@ -64,7 +64,7 @@ function AppShellFrame({ children }: { children: React.ReactNode }) {
                     <Link
                       key={item.href}
                       href={item.href}
-                      className={`text-label rounded-full px-4 py-2.5 font-medium transition-colors ${
+                      className={`text-label inline-flex h-10 items-center justify-center rounded-full px-4 font-medium leading-none transition-colors ${
                         isActive
                           ? "bg-foreground text-background"
                           : cn(glassInset, "text-muted hover:text-foreground")
