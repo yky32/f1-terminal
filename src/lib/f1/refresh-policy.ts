@@ -1,0 +1,5 @@
+export const ROUTE_REVALIDATE_MAP_SEC = 60;
+export const ROUTE_REVALIDATE_RACE_SEC = 120;
+export const CLIENT_MAP_REFRESH_MS = 60_000;
+export const MAP_LOCAL_TTL_MS = 45_000;
+export const RACE_LOCAL_TTL_MS = 120_000;
