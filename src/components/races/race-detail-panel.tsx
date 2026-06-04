@@ -386,7 +386,126 @@ function ConstructorStandingsTable({
   );
 }
 
+function parseLapTimeMs(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed || trimmed === "—" || trimmed === "-") {
+    return null;
+  }
+
+  const segments = trimmed.split(":");
+  if (segments.length === 2) {
+    const minutes = Number(segments[0]);
+    const seconds = Number(segments[1]);
+    if (!Number.isFinite(minutes) || !Number.isFinite(seconds)) {
+      return null;
+    }
+
+    return minutes * 60_000 + seconds * 1000;
+  }
+
+  if (segments.length === 1) {
+    const seconds = Number(segments[0]);
+    if (!Number.isFinite(seconds)) {
+      return null;
+    }
+
+    return seconds * 1000;
+  }
+
+  return null;
+}
+
+function lapTimeExtremes(times: string[]) {
+  const parsed = times
+    .map((time, index) => ({ index, ms: parseLapTimeMs(time) }))
+    .filter((item): item is { index: number; ms: number } => item.ms !== null);
+
+  if (parsed.length < 2) {
+    return { fastestIndex: null, slowestIndex: null };
+  }
+
+  let fastest = parsed[0];
+  let slowest = parsed[0];
+
+  for (const item of parsed) {
+    if (item.ms < fastest.ms) {
+      fastest = item;
+    }
+
+    if (item.ms > slowest.ms) {
+      slowest = item;
+    }
+  }
+
+  if (fastest.ms === slowest.ms) {
+    return { fastestIndex: null, slowestIndex: null };
+  }
+
+  return { fastestIndex: fastest.index, slowestIndex: slowest.index };
+}
+
+function LapTimeCell({
+  time,
+  pace,
+  variant = "last-lap",
+}: {
+  time: string;
+  pace: "fastest" | "slowest" | null;
+  variant?: "last-lap" | "fastest-lap";
+}) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 font-medium tabular-nums",
+        pace === "fastest" && "bg-emerald-500/10 text-emerald-800",
+        pace === "slowest" && "bg-red-500/10 text-red-800",
+        pace == null && "text-neutral-950",
+      )}
+      title={
+        pace === "fastest"
+          ? variant === "fastest-lap"
+            ? "Fastest lap"
+            : "Quickest last lap"
+          : pace === "slowest"
+            ? variant === "fastest-lap"
+              ? "Slowest lap in list"
+              : "Slowest last lap"
+            : undefined
+      }
+    >
+      <Timer
+        className={cn(
+          "h-3.5 w-3.5 shrink-0",
+          pace === "fastest"
+            ? "text-emerald-600"
+            : pace === "slowest"
+              ? "text-red-600"
+              : "text-neutral-500",
+        )}
+        strokeWidth={2}
+        aria-hidden
+      />
+      {time}
+      {pace === "fastest" ? (
+        <span className="text-[0.5625rem] font-semibold uppercase tracking-[0.08em] text-emerald-700">
+          Quick
+        </span>
+      ) : null}
+      {pace === "slowest" ? (
+        <span className="text-[0.5625rem] font-semibold uppercase tracking-[0.08em] text-red-700">
+          Slow
+        </span>
+      ) : null}
+    </span>
+  );
+}
+
 function LapLeadersTable({ rows }: { rows: RaceProfile["lapLeaders"] }) {
+  const { fastestIndex, slowestIndex } = useMemo(
+    () => lapTimeExtremes(rows.map((row) => row.lastLap)),
+    [rows],
+  );
+
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full text-left text-[0.8125rem]">
@@ -399,7 +518,7 @@ function LapLeadersTable({ rows }: { rows: RaceProfile["lapLeaders"] }) {
           </tr>
         </thead>
         <tbody>
-          {rows.map((row) => (
+          {rows.map((row, index) => (
             <tr key={`${row.position}-${row.driverName}`} className="border-t border-black/[0.05]">
               <td className="px-4 py-2.5">
                 <PositionBadge position={row.position} />
@@ -415,8 +534,17 @@ function LapLeadersTable({ rows }: { rows: RaceProfile["lapLeaders"] }) {
               <td className="hidden px-4 py-2.5 font-medium tabular-nums text-neutral-700 md:table-cell">
                 {row.gap}
               </td>
-              <td className="px-4 py-2.5 font-medium tabular-nums text-neutral-950">
-                {row.lastLap}
+              <td className="px-4 py-2.5">
+                <LapTimeCell
+                  time={row.lastLap}
+                  pace={
+                    index === fastestIndex
+                      ? "fastest"
+                      : index === slowestIndex
+                        ? "slowest"
+                        : null
+                  }
+                />
               </td>
             </tr>
           ))}
@@ -427,6 +555,11 @@ function LapLeadersTable({ rows }: { rows: RaceProfile["lapLeaders"] }) {
 }
 
 function FastestLapsTable({ rows }: { rows: RaceProfile["fastestLaps"] }) {
+  const { fastestIndex, slowestIndex } = useMemo(
+    () => lapTimeExtremes(rows.map((row) => row.time)),
+    [rows],
+  );
+
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full text-left text-[0.8125rem]">
@@ -439,7 +572,7 @@ function FastestLapsTable({ rows }: { rows: RaceProfile["fastestLaps"] }) {
           </tr>
         </thead>
         <tbody>
-          {rows.map((row) => (
+          {rows.map((row, index) => (
             <tr key={`${row.position}-${row.driverName}`} className="border-t border-black/[0.05]">
               <td className="px-4 py-2.5">
                 <PositionBadge position={row.position} />
@@ -452,8 +585,18 @@ function FastestLapsTable({ rows }: { rows: RaceProfile["fastestLaps"] }) {
                   showName
                 />
               </td>
-              <td className="px-4 py-2.5 font-semibold tabular-nums text-neutral-950">
-                {row.time}
+              <td className="px-4 py-2.5">
+                <LapTimeCell
+                  time={row.time}
+                  variant="fastest-lap"
+                  pace={
+                    index === fastestIndex
+                      ? "fastest"
+                      : index === slowestIndex
+                        ? "slowest"
+                        : null
+                  }
+                />
               </td>
               <td className="px-4 py-2.5 tabular-nums text-neutral-700">{row.lap}</td>
             </tr>
