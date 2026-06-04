@@ -93,3 +93,51 @@ export function mondayFirstOffset(year: number, month: number) {
 export function daysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate();
 }
+
+/** Month index to open first: live weekend, else current month, else next with races. */
+export function initialCalendarMonthIndex(months: CalendarMonthBucket[]): number {
+  if (months.length === 0) return 0;
+
+  const focus = calendarFocusTarget(months);
+  if (focus) return focus.monthIndex;
+
+  const now = new Date();
+  const currentKey = `${now.getFullYear()}-${now.getMonth()}`;
+  const currentIndex = months.findIndex((month) => month.key === currentKey);
+  if (currentIndex >= 0) return currentIndex;
+
+  const today = now.getTime();
+  const upcomingIndex = months.findIndex((month) =>
+    month.races.some((race) => new Date(race.raceDate).getTime() >= today),
+  );
+  if (upcomingIndex >= 0) return upcomingIndex;
+
+  return months.length - 1;
+}
+
+export type CalendarFocusTarget = {
+  monthIndex: number;
+  raceId: string;
+  kind: "active" | "upcoming";
+};
+
+/** Live weekend month first, else next upcoming race month. */
+export function calendarFocusTarget(
+  months: CalendarMonthBucket[],
+): CalendarFocusTarget | null {
+  for (let index = 0; index < months.length; index += 1) {
+    const race = months[index].races.find((entry) => entry.weekendStatus === "active");
+    if (race) {
+      return { monthIndex: index, raceId: race.id, kind: "active" };
+    }
+  }
+
+  for (let index = 0; index < months.length; index += 1) {
+    const race = months[index].races.find((entry) => entry.weekendStatus === "upcoming");
+    if (race) {
+      return { monthIndex: index, raceId: race.id, kind: "upcoming" };
+    }
+  }
+
+  return null;
+}

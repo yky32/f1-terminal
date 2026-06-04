@@ -34,7 +34,7 @@ export function GlobalStandingsSection() {
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
           <div className={cn(glass, "overflow-hidden")}>
             <div className="border-b border-black/[0.06] px-4 py-3">
-              <h3 className="text-[0.8125rem] font-semibold text-neutral-950">
+              <h3 className="text-[0.875rem] font-semibold text-neutral-950">
                 Driver standings · Top 10
               </h3>
               <p className="mt-0.5 text-[0.6875rem] text-neutral-500">API-Sports · Rankings / drivers</p>
@@ -42,7 +42,7 @@ export function GlobalStandingsSection() {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[20rem] text-left text-[0.8125rem]">
                 <thead>
-                  <tr className="border-b border-black/[0.05] text-[0.625rem] font-semibold uppercase tracking-[0.08em] text-neutral-500">
+                  <tr className="border-b border-black/[0.05] text-[0.6875rem] font-semibold uppercase tracking-[0.08em] text-neutral-500">
                     <th className="px-4 py-2.5">Pos</th>
                     <th className="px-2 py-2.5">Driver</th>
                     <th className="px-2 py-2.5">Team</th>
@@ -63,12 +63,12 @@ export function GlobalStandingsSection() {
                           key={row.driverId}
                           className="border-b border-black/[0.04] last:border-0"
                         >
-                          <td className="px-4 py-2.5 font-semibold tabular-nums text-neutral-500">
+                          <td className="px-4 py-2.5 tabular-nums text-neutral-500">
                             {row.position}
                           </td>
                           <td className="px-2 py-2.5">
                             <span className="font-semibold text-neutral-950">{row.driverName}</span>
-                            <span className="ml-1.5 text-[0.6875rem] text-neutral-500">
+                            <span className="ml-1.5 font-medium tabular-nums text-neutral-500">
                               {row.driverAbbr}
                             </span>
                           </td>
@@ -91,30 +91,30 @@ export function GlobalStandingsSection() {
 
           <aside className={cn(glass, "flex flex-col overflow-hidden")}>
             <div className="border-b border-black/[0.06] px-4 py-3">
-              <h3 className="text-[0.8125rem] font-semibold text-neutral-950">
+              <h3 className="text-[0.875rem] font-semibold text-neutral-950">
                 Constructor standings
               </h3>
               <p className="mt-0.5 text-[0.6875rem] text-neutral-500">API-Sports · Rankings / teams</p>
             </div>
-            <ul className="divide-y divide-black/[0.05]">
+            <ul className="divide-y divide-black/[0.05] text-[0.8125rem]">
               {loading
                 ? Array.from({ length: 5 }).map((_, index) => (
-                    <li key={index} className="px-4 py-3">
+                    <li key={index} className="px-4 py-2.5">
                       <div className="h-4 animate-pulse rounded bg-black/[0.05]" />
                     </li>
                   ))
                 : constructors.map((row) => (
                     <li
                       key={row.teamId}
-                      className="flex items-center justify-between gap-3 px-4 py-3"
+                      className="flex items-center justify-between gap-3 px-4 py-2.5"
                     >
                       <div className="flex min-w-0 items-center gap-2.5">
-                        <span className="w-5 shrink-0 text-[0.75rem] font-semibold tabular-nums text-neutral-400">
+                        <span className="w-5 shrink-0 tabular-nums text-neutral-500">
                           {row.position}
                         </span>
                         <TeamBadge teamId={row.teamId} teamName={row.teamName} />
                       </div>
-                      <span className="shrink-0 text-[0.8125rem] font-semibold tabular-nums text-neutral-900">
+                      <span className="shrink-0 font-semibold tabular-nums text-neutral-950">
                         {row.points}
                       </span>
                     </li>

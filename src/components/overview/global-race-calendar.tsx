@@ -3,8 +3,11 @@
 import Link from "next/link";
 import {
   CalendarDays,
+  ChevronLeft,
+  ChevronRight,
   GalleryHorizontal,
   LayoutGrid,
+  Radio,
   type LucideIcon,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
@@ -13,12 +16,15 @@ import type { GlobalRaceCalendarEntry } from "@/lib/data/global-overview";
 import type { WeekendStatus } from "@/lib/data/live-session";
 import { glassCard, glassFocus, glassHover, glassInset } from "@/components/glass-surface";
 import {
+  calendarFocusTarget,
   daysInMonth,
   groupRacesByMonth,
+  initialCalendarMonthIndex,
   mondayFirstOffset,
   racesByDayInMonth,
   readGlobalCalendarView,
   writeGlobalCalendarView,
+  type CalendarFocusTarget,
   type GlobalCalendarViewMode,
 } from "@/lib/f1/global-calendar-view";
 import { cn } from "@/lib/utils";
@@ -28,8 +34,8 @@ const STATUS_STYLES: Record<
   { dot: string; chip: string; label: string }
 > = {
   finished: {
-    dot: "bg-neutral-400",
-    chip: "bg-neutral-900/6 text-neutral-600",
+    dot: "bg-emerald-500",
+    chip: "bg-emerald-500/12 text-emerald-800",
     label: "Completed",
   },
   active: {
@@ -157,8 +163,12 @@ function CalendarLoadingSkeleton({ view }: { view: GlobalCalendarViewMode }) {
 
   if (view === "calendar") {
     return (
-      <div className="space-y-4">
-        <div className={cn(glassCard, "h-64 animate-pulse opacity-70")} />
+      <div className="space-y-3">
+        <div className="flex items-center justify-center gap-3">
+          <div className={cn(glassInset, "h-9 w-9 animate-pulse rounded-full opacity-70")} />
+          <div className="h-4 w-32 animate-pulse rounded bg-black/[0.05]" />
+          <div className={cn(glassInset, "h-9 w-9 animate-pulse rounded-full opacity-70")} />
+        </div>
         <div className={cn(glassCard, "h-64 animate-pulse opacity-70")} />
       </div>
     );
@@ -202,6 +212,20 @@ function GridView({ races }: { races: GlobalRaceCalendarEntry[] }) {
 
 function CalendarMonthView({ races }: { races: GlobalRaceCalendarEntry[] }) {
   const months = groupRacesByMonth(races);
+  const focus = calendarFocusTarget(months);
+  const [monthIndex, setMonthIndex] = useState(0);
+  const [emphasisRaceId, setEmphasisRaceId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setMonthIndex(initialCalendarMonthIndex(months));
+    setEmphasisRaceId(null);
+  }, [races]);
+
+  useEffect(() => {
+    if (!emphasisRaceId) return undefined;
+    const timer = window.setTimeout(() => setEmphasisRaceId(null), 2400);
+    return () => window.clearTimeout(timer);
+  }, [emphasisRaceId]);
 
   if (months.length === 0) {
     return (
@@ -211,19 +235,150 @@ function CalendarMonthView({ races }: { races: GlobalRaceCalendarEntry[] }) {
     );
   }
 
+  const safeIndex = Math.min(monthIndex, months.length - 1);
+  const bucket = months[safeIndex];
+  const onFocusMonth = focus
+    ? () => {
+        setMonthIndex(focus.monthIndex);
+        setEmphasisRaceId(focus.raceId);
+      }
+    : undefined;
+
   return (
-    <div className="space-y-4">
-      {months.map((month) => (
-        <MonthCalendarPanel key={month.key} bucket={month} />
-      ))}
+    <div className="space-y-3">
+      <PageFlipNav
+        label={bucket.label}
+        page={safeIndex}
+        pageCount={months.length}
+        onPrevious={() => setMonthIndex((current) => Math.max(0, current - 1))}
+        onNext={() => setMonthIndex((current) => Math.min(months.length - 1, current + 1))}
+        focus={focus}
+        onFocus={onFocusMonth}
+        isFocusMonth={safeIndex === focus?.monthIndex}
+      />
+      <MonthCalendarPanel
+        bucket={bucket}
+        emphasisRaceId={emphasisRaceId}
+        focusRaceId={focus?.kind === "active" ? focus.raceId : null}
+      />
     </div>
+  );
+}
+
+function PageFlipNav({
+  label,
+  page,
+  pageCount,
+  onPrevious,
+  onNext,
+  focus,
+  onFocus,
+  isFocusMonth,
+}: {
+  label: string;
+  page: number;
+  pageCount: number;
+  onPrevious: () => void;
+  onNext: () => void;
+  focus?: CalendarFocusTarget | null;
+  onFocus?: () => void;
+  isFocusMonth?: boolean;
+}) {
+  const atStart = page <= 0;
+  const atEnd = page >= pageCount - 1;
+  const focusLabel = focus?.kind === "active" ? "Live weekend" : "Next GP";
+
+  return (
+    <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex items-center justify-center gap-2 sm:flex-1 sm:gap-3">
+        <PageFlipButton
+          direction="previous"
+          disabled={atStart}
+          onClick={onPrevious}
+        />
+        <div className="min-w-0 text-center">
+          <p className="truncate text-[0.8125rem] font-semibold text-neutral-950">{label}</p>
+          {pageCount > 1 ? (
+            <p className="mt-0.5 text-[0.6875rem] tabular-nums text-neutral-500">
+              {page + 1} / {pageCount}
+            </p>
+          ) : null}
+        </div>
+        <PageFlipButton direction="next" disabled={atEnd} onClick={onNext} />
+      </div>
+
+      {focus && onFocus ? (
+        <button
+          type="button"
+          onClick={onFocus}
+          aria-current={isFocusMonth ? "true" : undefined}
+          className={cn(
+            glassInset,
+            glassFocus,
+            "inline-flex items-center justify-center gap-1.5 self-center rounded-full px-3 py-2 text-[0.75rem] font-semibold transition-colors sm:self-auto",
+            isFocusMonth
+              ? focus.kind === "active"
+                ? "bg-red-500/12 text-red-800 ring-1 ring-red-500/25"
+                : "bg-sky-500/12 text-sky-900 ring-1 ring-sky-500/25"
+              : "text-neutral-700 hover:bg-white/60 hover:text-neutral-950",
+          )}
+        >
+          {focus.kind === "active" ? (
+            <span className="relative flex h-2 w-2 shrink-0" aria-hidden>
+              <span className="absolute inset-0 animate-ping rounded-full bg-red-500/55" />
+              <span className="relative m-auto h-1.5 w-1.5 rounded-full bg-red-600" />
+            </span>
+          ) : (
+            <Radio className="h-3 w-3 shrink-0" strokeWidth={2} aria-hidden />
+          )}
+          {focusLabel}
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
+function PageFlipButton({
+  direction,
+  disabled,
+  onClick,
+}: {
+  direction: "previous" | "next";
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  const Icon = direction === "previous" ? ChevronLeft : ChevronRight;
+  const label = direction === "previous" ? "Previous page" : "Next page";
+
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      title={label}
+      disabled={disabled}
+      onClick={onClick}
+      className={cn(
+        glassInset,
+        glassFocus,
+        "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-neutral-700 transition-colors",
+        disabled
+          ? "cursor-not-allowed opacity-35"
+          : "hover:bg-white/60 hover:text-neutral-950",
+      )}
+    >
+      <Icon className="h-4 w-4" strokeWidth={2} aria-hidden />
+    </button>
   );
 }
 
 function MonthCalendarPanel({
   bucket,
+  emphasisRaceId,
+  focusRaceId,
 }: {
   bucket: ReturnType<typeof groupRacesByMonth>[number];
+  emphasisRaceId?: string | null;
+  focusRaceId?: string | null;
 }) {
   const racesOnDay = racesByDayInMonth(bucket.races);
   const leadingBlanks = mondayFirstOffset(bucket.year, bucket.month);
@@ -274,46 +429,65 @@ function MonthCalendarPanel({
 
           const dayRaces = racesOnDay.get(cell.day) ?? [];
           const isRaceDay = dayRaces.length > 0;
+          const hasLiveRace = dayRaces.some((race) => race.weekendStatus === "active");
 
           return (
             <div
               key={`day-${cell.day}`}
               className={cn(
                 "min-h-[4.5rem] rounded-lg border p-1 sm:min-h-[5.25rem] sm:p-1.5",
-                isRaceDay
-                  ? "border-white/30 bg-white/30"
-                  : "border-transparent bg-black/[0.02]",
+                hasLiveRace
+                  ? "border-red-500/25 bg-red-500/[0.06]"
+                  : isRaceDay
+                    ? "border-white/30 bg-white/30"
+                    : "border-transparent bg-black/[0.02]",
               )}
             >
               <span
                 className={cn(
                   "inline-flex h-5 w-5 items-center justify-center rounded-full text-[0.6875rem] font-semibold tabular-nums",
-                  isRaceDay ? "bg-neutral-950 text-white" : "text-neutral-500",
+                  hasLiveRace
+                    ? "bg-red-600 text-white"
+                    : isRaceDay
+                      ? "bg-neutral-950 text-white"
+                      : "text-neutral-500",
                 )}
               >
                 {cell.day}
               </span>
 
               <div className="mt-1 space-y-1">
-                {dayRaces.map((race) => (
-                  <Link
-                    key={race.id}
-                    href={`/races/${race.id}`}
-                    className={cn(
-                      glassFocus,
-                      "block rounded-md px-1.5 py-1 transition-colors hover:bg-white/50",
-                      race.weekendStatus === "active" && "ring-1 ring-red-500/30",
-                    )}
-                    title={race.name}
-                  >
-                    <p className="truncate text-[0.625rem] font-bold tabular-nums text-neutral-400">
-                      R{race.round}
-                    </p>
-                    <p className="truncate text-[0.6875rem] font-semibold leading-tight text-neutral-950">
-                      {race.shortName}
-                    </p>
-                  </Link>
-                ))}
+                {dayRaces.map((race) => {
+                  const isLive = race.weekendStatus === "active";
+                  const isFocusedLive = isLive && race.id === focusRaceId;
+                  const isEmphasized = race.id === emphasisRaceId;
+
+                  return (
+                    <Link
+                      key={race.id}
+                      href={`/races/${race.id}`}
+                      className={cn(
+                        glassFocus,
+                        "block rounded-md px-1.5 py-1 transition-colors hover:bg-white/50",
+                        isLive &&
+                          "bg-red-500/10 ring-1 ring-red-500/35",
+                        isFocusedLive && "ring-2 ring-red-500/45",
+                        isEmphasized && "global-calendar-live-emphasis",
+                      )}
+                      title={race.name}
+                    >
+                      <p className="truncate text-[0.625rem] font-bold tabular-nums text-neutral-400">
+                        R{race.round}
+                        {isLive ? (
+                          <span className="ml-1 uppercase tracking-[0.06em] text-red-700">Live</span>
+                        ) : null}
+                      </p>
+                      <p className="truncate text-[0.6875rem] font-semibold leading-tight text-neutral-950">
+                        {race.shortName}
+                      </p>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           );
@@ -345,6 +519,8 @@ function RaceCalendarCard({
         glassFocus,
         "flex flex-col p-3",
         race.weekendStatus === "active" && "ring-1 ring-red-500/25",
+        race.weekendStatus === "upcoming" &&
+          "opacity-[0.82] saturate-[0.88] transition-[opacity,filter] hover:opacity-100 hover:saturate-100",
         className,
       )}
     >

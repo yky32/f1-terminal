@@ -70,7 +70,7 @@ export function CircuitLivePin({
               className={cn(
                 "absolute inset-0 rounded-full",
                 isFinished
-                  ? "bg-neutral-400/20"
+                  ? "bg-emerald-500/20"
                   : isActiveWeekend
                     ? "bg-amber-400/25"
                     : "bg-sky-400/18",
@@ -83,7 +83,7 @@ export function CircuitLivePin({
               "relative z-10 h-3.5 w-3.5 rounded-full ring-2 ring-white/80",
               selected && "scale-125",
               isFinished
-                ? "bg-neutral-400"
+                ? "bg-emerald-500"
                 : isActiveWeekend
                   ? isUpcoming && !hasSessions
                     ? "bg-amber-500"
