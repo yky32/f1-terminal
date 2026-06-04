@@ -187,14 +187,9 @@
     z-index: 0;
     pointer-events: none;
     overflow: hidden;
-    mask-image:
-      linear-gradient(to right, transparent 0%, transparent 55%, black 72%, black 100%),
-      linear-gradient(to bottom, transparent 0%, transparent 18%, black 30%);
-    mask-composite: intersect;
-    -webkit-mask-image:
-      linear-gradient(to right, transparent 0%, transparent 55%, black 72%, black 100%),
-      linear-gradient(to bottom, transparent 0%, transparent 18%, black 30%);
-    -webkit-mask-composite: source-in;
+    /* Fade under header only — orbs visible across full page width */
+    mask-image: linear-gradient(to bottom, transparent 0%, transparent 10%, black 26%, black 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent 10%, black 26%, black 100%);
   }
 
   .page-orb {
@@ -293,6 +288,19 @@
     box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.05);
   }
 
+  /* Small tiles — light glass without the heavy grey panel fill */
+  .news-glass-brick--card {
+    background: linear-gradient(
+      165deg,
+      rgba(255, 255, 255, 0.34) 0%,
+      rgba(255, 255, 255, 0.16) 100%
+    );
+    backdrop-filter: blur(18px) saturate(168%);
+    -webkit-backdrop-filter: blur(18px) saturate(168%);
+    border-color: rgba(255, 255, 255, 0.26);
+    box-shadow: 0 6px 22px rgba(15, 23, 42, 0.045);
+  }
+
   .news-glass-brick--interactive:hover {
     transform: translateY(-2px) scale(1.002);
     border-color: rgba(255, 255, 255, 0.32);
@@ -307,6 +315,21 @@
   .news-glass-brick--interactive:active {
     transform: translateY(-1px) scale(0.998);
     transition-duration: 0.15s;
+  }
+
+  .news-glass-brick--interactive.news-glass-brick--card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.36);
+    background: linear-gradient(
+      165deg,
+      rgba(255, 255, 255, 0.46) 0%,
+      rgba(255, 255, 255, 0.24) 100%
+    );
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+  }
+
+  .news-glass-brick--interactive.news-glass-brick--card:active {
+    transform: translateY(-1px);
   }
 
   /* Leagues page — denser liquid glass (~20% more opacity than news-glass-brick) */
@@ -392,80 +415,107 @@
     transition-duration: 0.15s;
   }
 
-  /* Races page — ice bricks (gradient + edge light only; no backdrop-filter) */
+  /* Races page — liquid glass (same family as news-glass; orbs show through) */
   .races-glass-brick {
+    isolation: isolate;
+    overflow: hidden;
     background: linear-gradient(
-      168deg,
-      rgba(255, 255, 255, 0.9) 0%,
-      rgba(255, 255, 255, 0.76) 48%,
-      rgba(255, 255, 255, 0.7) 100%
+      165deg,
+      rgba(255, 255, 255, 0.58) 0%,
+      rgba(255, 255, 255, 0.42) 100%
     );
-    border: 1px solid rgba(255, 255, 255, 0.78);
-    box-shadow:
-      0 10px 32px rgba(15, 23, 42, 0.08),
-      inset 0 1px 0 rgba(255, 255, 255, 0.95),
-      inset 1px 0 0 rgba(255, 255, 255, 0.42);
+    backdrop-filter: blur(24px) saturate(175%);
+    -webkit-backdrop-filter: blur(24px) saturate(175%);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    box-shadow: 0 8px 28px rgba(15, 23, 42, 0.06);
   }
 
   .races-glass-brick--strong {
     background: linear-gradient(
-      168deg,
-      rgba(255, 255, 255, 0.94) 0%,
-      rgba(255, 255, 255, 0.8) 100%
+      165deg,
+      rgba(255, 255, 255, 0.64) 0%,
+      rgba(255, 255, 255, 0.48) 100%
     );
-    border-color: rgba(255, 255, 255, 0.85);
-    box-shadow:
-      0 12px 36px rgba(15, 23, 42, 0.09),
-      inset 0 1px 0 rgba(255, 255, 255, 0.98),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border-color: rgba(255, 255, 255, 0.26);
+    box-shadow: 0 10px 32px rgba(15, 23, 42, 0.07);
   }
 
   .races-glass-brick--inset {
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.82) 0%,
-      rgba(255, 255, 255, 0.62) 100%
-    );
-    border: 1px solid rgba(255, 255, 255, 0.62);
-    box-shadow:
-      inset 0 1px 3px rgba(15, 23, 42, 0.06),
-      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.28);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.05);
   }
 
   .races-glass-brick--interactive:hover {
     transform: translateY(-2px) scale(1.002);
-    border-color: rgba(255, 255, 255, 0.9);
+    border-color: rgba(255, 255, 255, 0.32);
     background: linear-gradient(
-      168deg,
-      rgba(255, 255, 255, 0.96) 0%,
-      rgba(255, 255, 255, 0.82) 100%
+      165deg,
+      rgba(255, 255, 255, 0.66) 0%,
+      rgba(255, 255, 255, 0.5) 100%
     );
-    box-shadow:
-      0 14px 38px rgba(15, 23, 42, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.98);
-  }
-
-  /* Neutralize page orbs behind races islands only */
-  .app-page:has(.races-page-root) .page-orb {
-    opacity: 0.24;
-    filter: blur(96px) saturate(0.15) brightness(1.12);
-  }
-
-  .app-page:has(.races-page-root) .page-orb--sky {
-    background: radial-gradient(circle, rgba(226, 232, 240, 0.5) 0%, transparent 68%);
-  }
-
-  .app-page:has(.races-page-root) .page-orb--violet {
-    background: radial-gradient(circle, rgba(203, 213, 225, 0.42) 0%, transparent 68%);
-  }
-
-  .app-page:has(.races-page-root) .page-orb--mint {
-    background: radial-gradient(circle, rgba(226, 232, 240, 0.38) 0%, transparent 68%);
+    box-shadow: 0 14px 36px rgba(15, 23, 42, 0.08);
   }
 
   .races-glass-brick--interactive:active {
     transform: translateY(-1px) scale(0.998);
     transition-duration: 0.15s;
+  }
+
+  /* Race hero — readable 70% panel + 30% map well */
+  .race-hero-shell.races-glass-brick--strong {
+    background: linear-gradient(
+      168deg,
+      rgba(255, 255, 255, 0.82) 0%,
+      rgba(255, 255, 255, 0.68) 100%
+    );
+    border-color: rgba(255, 255, 255, 0.42);
+    box-shadow:
+      0 12px 36px rgba(15, 23, 42, 0.07),
+      inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  }
+
+  .race-hero-stat {
+    background: rgba(255, 255, 255, 0.52);
+    border: 1px solid rgba(255, 255, 255, 0.38);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  }
+
+  .race-hero-map-well {
+    background: linear-gradient(
+      165deg,
+      rgba(241, 245, 249, 0.88) 0%,
+      rgba(255, 255, 255, 0.42) 100%
+    );
+  }
+
+  .race-circuit-dialog-shell.races-glass-brick--strong {
+    background: linear-gradient(
+      168deg,
+      rgba(255, 255, 255, 0.84) 0%,
+      rgba(255, 255, 255, 0.72) 100%
+    );
+    border-color: rgba(255, 255, 255, 0.38);
+    box-shadow: 0 24px 52px -16px rgba(15, 23, 42, 0.22);
+  }
+
+  .race-circuit-dialog-map {
+    background: linear-gradient(
+      165deg,
+      rgba(241, 245, 249, 0.92) 0%,
+      rgba(255, 255, 255, 0.45) 100%
+    );
+  }
+
+  .race-circuit-dialog-stat,
+  .race-circuit-dialog-panel {
+    background: rgba(255, 255, 255, 0.48);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
   }
 
   .news-enter {
@@ -528,6 +578,28 @@
   .user-menu-liquid > * {
     position: relative;
     z-index: 1;
+  }
+
+  .races-circuit-dialog.user-menu-liquid {
+    transform-origin: center center;
+    animation: races-circuit-dialog-enter 0.52s cubic-bezier(0.22, 1.12, 0.36, 1) backwards;
+  }
+
+  .races-circuit-dialog.race-circuit-dialog-shell {
+    transform-origin: center center;
+    animation: races-circuit-dialog-enter 0.52s cubic-bezier(0.22, 1.12, 0.36, 1) backwards;
+  }
+
+  .global-weekend-highlight--live {
+    animation: global-weekend-highlight-pulse 2.4s ease-in-out infinite;
+  }
+
+  .races-circuit-dialog.user-menu-liquid::before {
+    top: -1.25rem;
+    right: auto;
+    left: 50%;
+    margin-left: -1.625rem;
+    animation: races-circuit-dialog-splash 0.48s cubic-bezier(0.22, 1.12, 0.36, 1) backwards;
   }
 
   .live-pin-ping {
@@ -665,6 +737,8 @@
   .user-menu-liquid,
   .user-menu-liquid::before,
   .user-menu-liquid::after,
+  .races-circuit-dialog.user-menu-liquid,
+  .races-circuit-dialog.user-menu-liquid::before,
   .user-menu-backdrop-enter,
   .page-orb {
     animation: none;
@@ -775,6 +849,61 @@
   100% {
     transform: translateX(125%);
     opacity: 0;
+  }
+}
+
+@keyframes global-weekend-highlight-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.55),
+      0 12px 28px rgba(15, 23, 42, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(239, 68, 68, 0.35),
+      0 16px 36px rgba(239, 68, 68, 0.14);
+  }
+}
+
+@keyframes races-circuit-dialog-enter {
+  0% {
+    opacity: 0;
+    border-radius: 9999px;
+    filter: blur(8px) saturate(145%);
+    transform: translateY(16px) scale(0.88);
+  }
+  42% {
+    opacity: 0.96;
+    border-radius: 1.5rem;
+    filter: blur(1px) saturate(168%);
+    transform: translateY(-4px) scale(1.02);
+  }
+  68% {
+    border-radius: 1.45rem;
+    filter: blur(0) saturate(175%);
+    transform: translateY(2px) scale(0.995);
+  }
+  100% {
+    opacity: 1;
+    border-radius: 1.5rem;
+    filter: blur(0) saturate(180%);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes races-circuit-dialog-splash {
+  0% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  40% {
+    opacity: 0.9;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.75);
   }
 }
 

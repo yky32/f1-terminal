@@ -1,3 +1,4 @@
+import { normalizeRaceProfile } from "@/lib/data/normalize-race-profile";
 import { getDataProvider } from "@/lib/data/get-provider";
 import { NextResponse } from "next/server";
 
@@ -19,7 +20,7 @@ export async function GET(_request: Request, context: RouteContext) {
       return NextResponse.json({ error: "Race not found" }, { status: 404 });
     }
 
-    return NextResponse.json(profile, {
+    return NextResponse.json(normalizeRaceProfile(profile), {
       headers: { "Cache-Control": "s-maxage=120, stale-while-revalidate" },
     });
   } catch (error) {

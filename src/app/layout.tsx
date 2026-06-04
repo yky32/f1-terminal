@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} h-full`} suppressHydrationWarning>
-      <body className="flex min-h-full flex-col bg-background text-foreground">
+      <body className="flex min-h-full flex-col bg-[#eef1f6] text-foreground">
         <SiteJsonLd />
         <ThemeInitScript />
         <AppShell>{children}</AppShell>

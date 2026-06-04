@@ -8,6 +8,7 @@ import { RaceDetailPanel } from "@/components/races/race-detail-panel";
 import { RaceHero } from "@/components/races/race-hero";
 import { racesGlass, racesGlassFocus, racesGlassInset } from "@/components/races/races-glass";
 import type { RaceProfile } from "@/lib/data/race-profile";
+import { normalizeRaceProfile } from "@/lib/data/normalize-race-profile";
 import { FEATURED_RACE_ID } from "@/lib/f1/race-catalog";
 import {
   readRaceCalendarCollapsed,
@@ -43,7 +44,7 @@ export function RacesFeed({
   const [selectedId, setSelectedId] = useState(resolvedSelectedId);
   const [profiles, setProfiles] = useState<Record<string, RaceProfile>>(() => {
     if (!initialRace || !isLoadedRaceProfile(initialRace)) return {};
-    return { [initialRace.id]: initialRace };
+    return { [initialRace.id]: normalizeRaceProfile(initialRace) };
   });
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [calendarCollapsed, setCalendarCollapsed] = useState(false);
@@ -65,7 +66,7 @@ export function RacesFeed({
   }, [resolvedSelectedId]);
 
   const races = useMemo(
-    () => catalog.map((shell) => profiles[shell.id] ?? shell),
+    () => catalog.map((shell) => normalizeRaceProfile(profiles[shell.id] ?? shell)),
     [catalog, profiles],
   );
 
@@ -74,7 +75,10 @@ export function RacesFeed({
     const cachedFresh = cached ? Date.now() - cached.cachedAt < RACE_LOCAL_TTL_MS : false;
 
     if (cached && isValidCachedRaceProfile(cached.profile, raceId)) {
-      setProfiles((current) => ({ ...current, [raceId]: cached.profile }));
+      setProfiles((current) => ({
+        ...current,
+        [raceId]: normalizeRaceProfile(cached.profile),
+      }));
       loadedRef.current.add(raceId);
       if (cachedFresh) return;
     } else if (loadedRef.current.has(raceId)) {
@@ -89,7 +93,7 @@ export function RacesFeed({
 
       if (data.error || !isValidCachedRaceProfile(data, raceId)) return;
 
-      setProfiles((current) => ({ ...current, [raceId]: data }));
+      setProfiles((current) => ({ ...current, [raceId]: normalizeRaceProfile(data) }));
       writeCachedRaceProfile(raceId, data);
       loadedRef.current.add(raceId);
     } finally {

@@ -10,7 +10,7 @@ export function TerminalPageSkeleton() {
       <div
         className={cn(
           "relative w-full animate-pulse overflow-hidden bg-black/[0.04]",
-          "h-[min(72vh,calc(100dvh-8rem))] min-h-[24rem]",
+          "h-[min(92vh,calc(100dvh-4.25rem))] min-h-[30rem]",
         )}
         aria-busy="true"
         aria-label="Loading primary view"
@@ -60,7 +60,7 @@ export function MapSectionSkeleton({
     <div
       className={cn(
         "relative w-full animate-pulse overflow-hidden bg-black/[0.04]",
-        "h-[min(72vh,calc(100dvh-8rem))] min-h-[24rem]",
+        "h-[min(92vh,calc(100dvh-4.25rem))] min-h-[30rem]",
         className,
       )}
       aria-busy="true"

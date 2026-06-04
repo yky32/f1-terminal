@@ -1,6 +1,7 @@
 import type { RaceProfile } from "@/lib/data/race-profile";
+import { normalizeRaceProfile } from "@/lib/data/normalize-race-profile";
 
-const STORAGE_PREFIX = "f1-terminal.raceProfile.v1.";
+const STORAGE_PREFIX = "f1-terminal.raceProfile.v2.";
 
 type StoredRaceProfile = {
   cachedAt: number;
@@ -31,7 +32,10 @@ export function readCachedRaceProfile(raceId: string): {
   if (!entry.cachedAt || typeof entry.cachedAt !== "number") return null;
   if (!entry.profile || typeof entry.profile !== "object") return null;
 
-  return { profile: entry.profile as RaceProfile, cachedAt: entry.cachedAt };
+  return {
+    profile: normalizeRaceProfile(entry.profile as RaceProfile),
+    cachedAt: entry.cachedAt,
+  };
 }
 
 export function writeCachedRaceProfile(raceId: string, profile: RaceProfile) {

@@ -8,13 +8,20 @@ import {
   Trophy,
   Users,
 } from "lucide-react";
+import {
+  RaceCircuitHistorySection,
+  RaceCircuitInfoSection,
+  RaceDriverPerformanceSection,
+  RaceResultsSection,
+  RaceSessionListSection,
+  RaceStandingsImpactSection,
+} from "@/components/races/race-detail-sections";
 import { useEffect, useMemo, useState } from "react";
 import {
   DataPresenceBadge,
   DriverAvatar,
   EmptyDataState,
   PositionBadge,
-  SessionTypeIcon,
   TeamBadge,
 } from "@/components/races/f1-visuals";
 import {
@@ -22,7 +29,6 @@ import {
   racesGlassFocus,
 } from "@/components/races/races-glass";
 import type { RaceProfile } from "@/lib/data/race-profile";
-import { sessionCountdownLabel } from "@/lib/data/live-session";
 import { driverAbbrFromName, getTeamVisual } from "@/lib/f1/team-visuals";
 import { cn } from "@/lib/utils";
 
@@ -96,53 +102,61 @@ export function RaceDetailPanel({ race, loading = false }: RaceDetailPanelProps)
       </div>
 
       {tab === "overview" ? (
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:items-start">
-          <section className={cn(racesGlass, "overflow-hidden")}>
-            <SectionHeader
-              icon={Users}
-              title="Driver standings"
-              meta={`After round ${Math.max(race.round - 1, 0)}`}
-              badge={
-                race.driverStandings.length > 0 ? (
-                  <DataPresenceBadge label={`${race.driverStandings.length} drivers`} />
-                ) : null
-              }
-            />
-            {race.driverStandings.length > 0 ? (
-              <DriverStandingsTable rows={race.driverStandings} />
-            ) : (
+        <OverviewTabContent race={race} hasStandings={hasStandings} />
+      ) : null}
+
+      {tab === "practice" ? (
+        <div className="flex flex-col gap-4">
+          <RaceSessionListSection
+            title="Practice schedule"
+            meta="FP1 · FP2 · FP3"
+            sessions={tabSessions}
+          />
+          {race.fastestLaps.length > 0 ? (
+            <section className={cn(racesGlass, "overflow-hidden")}>
+              <SectionHeader
+                icon={Timer}
+                title="Fastest laps"
+                meta="Practice sessions"
+                badge={<DataPresenceBadge label={`${race.fastestLaps.length} laps`} />}
+              />
+              <FastestLapsTable rows={race.fastestLaps} />
+            </section>
+          ) : null}
+        </div>
+      ) : null}
+
+      {tab === "qualifying" ? (
+        <div className="flex flex-col gap-4">
+          <RaceSessionListSection
+            title="Qualifying schedule"
+            meta="Qualifying · Sprint qualifying"
+            sessions={tabSessions}
+          />
+          <RaceDriverPerformanceSection race={race} mode="grid" />
+        </div>
+      ) : null}
+
+      {tab === "race" ? (
+        <div className="flex flex-col gap-4">
+          <RaceSessionListSection
+            title="Race schedule"
+            meta="Grand Prix · Sprint"
+            sessions={tabSessions}
+          />
+          <RaceResultsSection race={race} />
+          <RaceDriverPerformanceSection race={race} mode="race" />
+          {race.raceResults.length === 0 && race.driverPerformance.length === 0 ? (
+            <section className={cn(racesGlass, "overflow-hidden")}>
               <EmptyDataState
                 icon={Trophy}
-                title="Standings loading"
-                description="Driver points will appear once this weekend's data is fetched."
+                title="Results after chequered flag"
+                description="Final classification and points will appear here once the race is completed."
               />
-            )}
-          </section>
-
-          <section className={cn(racesGlass, "overflow-hidden")}>
-            <SectionHeader
-              icon={Flag}
-              title="Constructor standings"
-              meta={`${race.season} season`}
-              badge={
-                race.constructorStandings.length > 0 ? (
-                  <DataPresenceBadge label={`${race.constructorStandings.length} teams`} />
-                ) : null
-              }
-            />
-            {race.constructorStandings.length > 0 ? (
-              <ConstructorStandingsTable rows={race.constructorStandings} />
-            ) : (
-              <EmptyDataState
-                icon={Flag}
-                title="No constructor data"
-                description="Team points will populate when race detail loads."
-              />
-            )}
-          </section>
-
+            </section>
+          ) : null}
           {race.lapLeaders.length > 0 ? (
-            <section className={cn(racesGlass, "overflow-hidden lg:col-span-2")}>
+            <section className={cn(racesGlass, "overflow-hidden")}>
               <SectionHeader
                 icon={Trophy}
                 title="On-track leaders"
@@ -152,113 +166,106 @@ export function RaceDetailPanel({ race, loading = false }: RaceDetailPanelProps)
               <LapLeadersTable rows={race.lapLeaders} />
             </section>
           ) : null}
-
-          {race.weather ? (
-            <section className={cn(racesGlass, "p-4 lg:col-span-2")}>
-              <SectionHeader
-                icon={CloudSun}
-                title="Weather & strategy layer"
-                meta={race.weather.condition}
-                badge={<DataPresenceBadge label="Track data" />}
-              />
-              <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                {[
-                  { label: "Air", value: `${race.weather.airTempC}°C`, icon: CloudSun },
-                  { label: "Track", value: `${race.weather.trackTempC}°C`, icon: Flag },
-                  { label: "Rain chance", value: `${race.weather.rainProbability}%`, icon: CloudSun },
-                  { label: "Wind", value: race.weather.wind, icon: CloudSun },
-                ].map((item) => (
-                  <div key={item.label} className="rounded-[1rem] bg-black/[0.03] px-3 py-3">
-                    <p className="flex items-center gap-1.5 text-[0.6875rem] font-semibold uppercase tracking-[0.08em] text-neutral-500">
-                      <item.icon className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
-                      {item.label}
-                    </p>
-                    <p className="mt-1 text-[0.9375rem] font-semibold text-neutral-950">{item.value}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-          ) : null}
-
-          {!hasStandings && race.sessions.length === 0 && !race.weather ? (
-            <section className={cn(racesGlass, "lg:col-span-2")}>
-              <EmptyDataState
-                icon={CalendarDays}
-                title="Weekend data pending"
-                description="Select an active Grand Prix or wait for the detail panel to finish loading."
-              />
-            </section>
-          ) : null}
         </div>
-      ) : (
+      ) : null}
+
+    </div>
+  );
+}
+
+function OverviewTabContent({
+  race,
+  hasStandings,
+}: {
+  race: RaceProfile;
+  hasStandings: boolean;
+}) {
+  return (
+    <div className="flex flex-col gap-4">
+      <RaceCircuitInfoSection race={race} />
+      <RaceCircuitHistorySection race={race} />
+      <RaceStandingsImpactSection race={race} />
+
+      <div className="grid gap-4 lg:grid-cols-2 lg:items-start">
         <section className={cn(racesGlass, "overflow-hidden")}>
           <SectionHeader
-            icon={CalendarDays}
-            title={`${TABS.find((item) => item.id === tab)?.label ?? "Sessions"} schedule`}
-            meta={`${tabSessions.length} session${tabSessions.length === 1 ? "" : "s"}`}
+            icon={Users}
+            title="Driver standings"
+            meta={`After round ${Math.max(race.round - 1, 0)}`}
             badge={
-              tabSessions.length > 0 ? (
-                <DataPresenceBadge label={`${tabSessions.length} scheduled`} />
+              race.driverStandings.length > 0 ? (
+                <DataPresenceBadge label={`${race.driverStandings.length} drivers`} />
               ) : null
             }
           />
-          {tabSessions.length > 0 ? (
-            <div className="divide-y divide-black/[0.06]">
-              {tabSessions.map((session) => (
-                <div key={session.id} className="flex items-center justify-between gap-4 px-4 py-3">
-                  <div className="flex min-w-0 items-center gap-3">
-                    <SessionTypeIcon type={session.type} />
-                    <div className="min-w-0">
-                      <p className="text-[0.875rem] font-semibold text-neutral-950">
-                        {session.typeLabel}
-                      </p>
-                      <p className="text-[0.75rem] text-neutral-600">
-                        {new Date(session.date).toLocaleString(undefined, {
-                          weekday: "short",
-                          month: "short",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
-                    </div>
-                  </div>
-                  <span
-                    className={cn(
-                      "rounded-full px-2.5 py-1 text-[0.625rem] font-semibold uppercase tracking-[0.08em]",
-                      session.status === "Live"
-                        ? "bg-red-500/15 text-red-700"
-                        : session.status === "Completed"
-                          ? "bg-emerald-500/10 text-emerald-700"
-                          : "bg-neutral-900/8 text-neutral-600",
-                    )}
-                  >
-                    {session.status === "Scheduled"
-                      ? sessionCountdownLabel(session.date)
-                      : session.status}
-                  </span>
-                </div>
-              ))}
-            </div>
+          {race.driverStandings.length > 0 ? (
+            <DriverStandingsTable rows={race.driverStandings} />
           ) : (
             <EmptyDataState
-              icon={CalendarDays}
-              title="No sessions in this tab"
-              description="Try another tab or pick a race weekend with scheduled running."
+              icon={Trophy}
+              title="Standings loading"
+              description="Driver points will appear once this weekend's data is fetched."
             />
           )}
         </section>
-      )}
 
-      {race.fastestLaps.length > 0 ? (
         <section className={cn(racesGlass, "overflow-hidden")}>
           <SectionHeader
-            icon={Timer}
-            title="Fastest laps"
-            meta="Practice snapshot"
-            badge={<DataPresenceBadge label={`${race.fastestLaps.length} laps`} />}
+            icon={Flag}
+            title="Constructor standings"
+            meta={`${race.season} season`}
+            badge={
+              race.constructorStandings.length > 0 ? (
+                <DataPresenceBadge label={`${race.constructorStandings.length} teams`} />
+              ) : null
+            }
           />
-          <FastestLapsTable rows={race.fastestLaps} />
+          {race.constructorStandings.length > 0 ? (
+            <ConstructorStandingsTable rows={race.constructorStandings} />
+          ) : (
+            <EmptyDataState
+              icon={Flag}
+              title="No constructor data"
+              description="Team points will populate when race detail loads."
+            />
+          )}
+        </section>
+      </div>
+
+      {race.weather ? (
+        <section className={cn(racesGlass, "p-4")}>
+          <SectionHeader
+            icon={CloudSun}
+            title="Weather & strategy layer"
+            meta={race.weather.condition}
+            badge={<DataPresenceBadge label="Track data" />}
+          />
+          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              { label: "Air", value: `${race.weather.airTempC}°C`, icon: CloudSun },
+              { label: "Track", value: `${race.weather.trackTempC}°C`, icon: Flag },
+              { label: "Rain chance", value: `${race.weather.rainProbability}%`, icon: CloudSun },
+              { label: "Wind", value: race.weather.wind, icon: CloudSun },
+            ].map((item) => (
+              <div key={item.label} className="rounded-[1rem] bg-black/[0.03] px-3 py-3">
+                <p className="flex items-center gap-1.5 text-[0.6875rem] font-semibold uppercase tracking-[0.08em] text-neutral-500">
+                  <item.icon className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
+                  {item.label}
+                </p>
+                <p className="mt-1 text-[0.9375rem] font-semibold text-neutral-950">{item.value}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {!hasStandings && race.sessions.length === 0 && !race.weather ? (
+        <section className={cn(racesGlass)}>
+          <EmptyDataState
+            icon={CalendarDays}
+            title="Weekend data pending"
+            description="Select an active Grand Prix or wait for the detail panel to finish loading."
+          />
         </section>
       ) : null}
     </div>

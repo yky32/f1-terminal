@@ -1,5 +1,6 @@
 import type { F1DataProvider } from "@/lib/data/provider";
 import {
+  getMockGlobalOverview,
   getMockMapCircuits,
   getMockRaceProfile,
 } from "@/lib/data/providers/mock/f1-data";
@@ -28,6 +29,11 @@ export function createMockProvider(): F1DataProvider {
     async getRaceById(raceId) {
       await delay(MOCK_LATENCY_MS);
       return getMockRaceProfile(raceId);
+    },
+
+    async getGlobalOverview() {
+      await delay(MOCK_LATENCY_MS);
+      return getMockGlobalOverview();
     },
   };
 }

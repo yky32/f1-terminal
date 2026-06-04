@@ -2,6 +2,7 @@ import type { MapSessionMode } from "@/lib/data/map-session-mode";
 import type { RaceProfile } from "@/lib/data/race-profile";
 import type { CircuitActivity } from "@/lib/data/live-circuit-activity";
 import type { LiveSession } from "@/lib/data/live-session";
+import type { GlobalOverviewPayload } from "@/lib/data/global-overview";
 import type { DataProviderId } from "@/lib/data/types";
 
 export type LiveCircuitsSnapshot = {
@@ -18,4 +19,5 @@ export interface F1DataProvider {
   getMapCircuits(mode: MapSessionMode): Promise<LiveCircuitsSnapshot>;
   getRaceCatalog(): Promise<RaceProfile[]>;
   getRaceById(raceId: string): Promise<RaceProfile | null>;
+  getGlobalOverview(): Promise<GlobalOverviewPayload>;
 }

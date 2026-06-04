@@ -57,6 +57,64 @@ export type WeatherSummary = {
   wind: string;
 };
 
+/** API-Sports Circuits — enriched locally where needed. */
+export type RaceCircuitInfo = {
+  name: string;
+  length: string | null;
+  laps: number | null;
+  lapRecord: string | null;
+  lapRecordHolder: string | null;
+  lapRecordYear: number | null;
+  location: string;
+  firstGrandPrix: number | null;
+  direction: string | null;
+  circuitType: string | null;
+};
+
+/** Final classification (rankings/races after session). */
+export type RaceResultRow = {
+  position: number;
+  driverName: string;
+  driverAbbr: string;
+  teamName: string;
+  grid: number;
+  status: string;
+  points: number;
+};
+
+/** Grid vs finish — API-Sports race result fields. */
+export type DriverPerformanceRow = {
+  driverId: number;
+  driverName: string;
+  driverAbbr: string;
+  teamName: string;
+  grid: number;
+  finish: number | null;
+  points: number;
+  positionsGained: number | null;
+};
+
+export type CircuitWinnerRow = {
+  season: number;
+  driverName: string;
+  teamName: string;
+};
+
+export type StandingsImpactRow = {
+  name: string;
+  pointsBefore: number;
+  pointsAfter: number;
+  delta: number;
+  positionChange: number | null;
+};
+
+export type StandingsImpact = {
+  round: number;
+  label: string;
+  drivers: StandingsImpactRow[];
+  constructors: StandingsImpactRow[];
+};
+
 export type RaceProfile = {
   id: string;
   apiCompetitionId: number;
@@ -85,6 +143,11 @@ export type RaceProfile = {
   fastestLaps: FastestLapRow[];
   lapLeaders: LapLeaderRow[];
   weather: WeatherSummary | null;
+  circuitInfo: RaceCircuitInfo;
+  raceResults: RaceResultRow[];
+  driverPerformance: DriverPerformanceRow[];
+  circuitHistory: CircuitWinnerRow[];
+  standingsImpact: StandingsImpact | null;
 };
 
 export type RaceCatalogEntry = {

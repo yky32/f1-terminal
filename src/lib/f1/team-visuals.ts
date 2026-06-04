@@ -37,6 +37,12 @@ export function getTeamVisual(teamId?: number | null, teamName?: string | null):
     const normalized = teamName.trim().toLowerCase();
     const byName = F1_TEAMS.find((team) => team.name.toLowerCase() === normalized);
     if (byName) return byName;
+
+    const byPartial = F1_TEAMS.find((team) => {
+      const teamNameLower = team.name.toLowerCase();
+      return normalized.includes(teamNameLower) || teamNameLower.includes(normalized);
+    });
+    if (byPartial) return byPartial;
   }
 
   return DEFAULT_TEAM;

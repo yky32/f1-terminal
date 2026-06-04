@@ -12,6 +12,7 @@ import {
 import type { SessionType } from "@/lib/data/live-session";
 import type { WeekendStatus } from "@/lib/data/live-session";
 import { driverAbbrFromName, getTeamVisual } from "@/lib/f1/team-visuals";
+import { TeamIcon } from "@/components/races/team-icon";
 import { cn } from "@/lib/utils";
 
 type VisualSize = "sm" | "md";
@@ -27,17 +28,9 @@ export function TeamBadge({
   showName?: boolean;
   className?: string;
 }) {
-  const team = getTeamVisual(teamId, teamName);
-
   return (
     <span className={cn("inline-flex min-w-0 items-center gap-2", className)}>
-      <span
-        className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-[0.5rem] font-bold uppercase tracking-wide text-white shadow-sm"
-        style={{ backgroundColor: team.primary }}
-        aria-hidden
-      >
-        {team.abbr.slice(0, 3)}
-      </span>
+      <TeamIcon teamId={teamId} teamName={teamName} size="sm" title={teamName} />
       {showName ? (
         <span className="truncate text-neutral-800">{teamName}</span>
       ) : null}

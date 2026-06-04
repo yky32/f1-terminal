@@ -11,6 +11,9 @@ export const glassSubtle = "news-glass-brick news-glass-brick--subtle rounded-xl
 
 export const glassInset = "news-glass-brick news-glass-brick--inset rounded-xl";
 
+/** Light glass for compact tiles (carousels, chips) — blur + border, minimal fill */
+export const glassCard = "news-glass-brick news-glass-brick--card rounded-[1rem]";
+
 export const glassHover =
   "news-glass-brick--interactive transition-[transform,box-shadow,border-color] duration-400 ease-[cubic-bezier(0.22,1,0.36,1)]";
 

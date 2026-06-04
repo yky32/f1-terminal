@@ -9,41 +9,29 @@ import type {
   RaceProfile,
   WeatherSummary,
 } from "@/lib/data/race-profile";
+import type { GlobalOverviewPayload, RegionRaceStat } from "@/lib/data/global-overview";
+import { GLOBAL_SEASON, SEASON_CALENDAR, SEASON_CIRCUIT_GEO, geoForRaceId } from "@/lib/f1/season-calendar";
+import {
+  buildRaceCircuitInfo,
+  getRaceDetailEnrichment,
+} from "@/lib/data/providers/mock/race-detail-data";
 import { RACE_CATALOG } from "@/lib/f1/race-catalog";
+import { RACE_REGION_LABELS, type RaceRegion } from "@/lib/data/race-profile";
 import type { LiveCircuitsSnapshot } from "@/lib/data/provider";
 
-type CircuitGeo = {
-  circuitId: number;
-  raceId: string;
-  name: string;
-  country: string;
-  city: string;
-  latitude: number;
-  longitude: number;
-};
-
-/** Circuit coordinates for map pins — not always present in API-Sports; enrich locally. */
-export const CIRCUIT_GEO: CircuitGeo[] = [
-  { circuitId: 1, raceId: "australian-gp", name: "Albert Park", country: "Australia", city: "Melbourne", latitude: -37.8497, longitude: 144.968 },
-  { circuitId: 2, raceId: "chinese-gp", name: "Shanghai International Circuit", country: "China", city: "Shanghai", latitude: 31.3389, longitude: 121.22 },
-  { circuitId: 3, raceId: "japanese-gp", name: "Suzuka", country: "Japan", city: "Suzuka", latitude: 34.8431, longitude: 136.541 },
-  { circuitId: 4, raceId: "bahrain-gp", name: "Bahrain International Circuit", country: "Bahrain", city: "Sakhir", latitude: 26.0325, longitude: 50.5106 },
-  { circuitId: 5, raceId: "saudi-arabian-gp", name: "Jeddah Corniche", country: "Saudi Arabia", city: "Jeddah", latitude: 21.6319, longitude: 39.1044 },
-  { circuitId: 6, raceId: "miami-gp", name: "Miami International Autodrome", country: "USA", city: "Miami", latitude: 25.958, longitude: -80.2389 },
-  { circuitId: 7, raceId: "emilia-romagna-gp", name: "Autodromo Enzo e Dino Ferrari", country: "Italy", city: "Imola", latitude: 44.3439, longitude: 11.7167 },
-  { circuitId: 8, raceId: "monaco-gp", name: "Circuit de Monaco", country: "Monaco", city: "Monte Carlo", latitude: 43.7347, longitude: 7.4206 },
-  { circuitId: 9, raceId: "canadian-gp", name: "Circuit Gilles Villeneuve", country: "Canada", city: "Montreal", latitude: 45.5008, longitude: -73.5228 },
-  { circuitId: 10, raceId: "spanish-gp", name: "Circuit de Barcelona-Catalunya", country: "Spain", city: "Barcelona", latitude: 41.57, longitude: 2.2611 },
-  { circuitId: 11, raceId: "austrian-gp", name: "Red Bull Ring", country: "Austria", city: "Spielberg", latitude: 47.2197, longitude: 14.7647 },
-  { circuitId: 12, raceId: "british-gp", name: "Silverstone Circuit", country: "Great Britain", city: "Silverstone", latitude: 52.0786, longitude: -1.0169 },
-];
+export const CIRCUIT_GEO = SEASON_CIRCUIT_GEO;
 
 const MOCK_DRIVER_STANDINGS: DriverStandingRow[] = [
-  { position: 1, driverId: 1, driverName: "Max Verstappen", driverAbbr: "VER", driverNumber: 1, teamId: 1, teamName: "Red Bull Racing", points: 136, wins: 4 },
-  { position: 2, driverId: 2, driverName: "Lando Norris", driverAbbr: "NOR", driverNumber: 4, teamId: 2, teamName: "McLaren", points: 118, wins: 1 },
-  { position: 3, driverId: 3, driverName: "Charles Leclerc", driverAbbr: "LEC", driverNumber: 16, teamId: 3, teamName: "Ferrari", points: 98, wins: 0 },
-  { position: 4, driverId: 4, driverName: "Oscar Piastri", driverAbbr: "PIA", driverNumber: 81, teamId: 2, teamName: "McLaren", points: 92, wins: 1 },
-  { position: 5, driverId: 5, driverName: "George Russell", driverAbbr: "RUS", driverNumber: 63, teamId: 4, teamName: "Mercedes", points: 84, wins: 1 },
+  { position: 1, driverId: 1, driverName: "Max Verstappen", driverAbbr: "VER", driverNumber: 1, teamId: 1, teamName: "Red Bull Racing", points: 142, wins: 4 },
+  { position: 2, driverId: 2, driverName: "Lando Norris", driverAbbr: "NOR", driverNumber: 4, teamId: 2, teamName: "McLaren", points: 124, wins: 2 },
+  { position: 3, driverId: 4, driverName: "Oscar Piastri", driverAbbr: "PIA", driverNumber: 81, teamId: 2, teamName: "McLaren", points: 108, wins: 1 },
+  { position: 4, driverId: 3, driverName: "Charles Leclerc", driverAbbr: "LEC", driverNumber: 16, teamId: 3, teamName: "Ferrari", points: 102, wins: 0 },
+  { position: 5, driverId: 5, driverName: "George Russell", driverAbbr: "RUS", driverNumber: 63, teamId: 4, teamName: "Mercedes", points: 88, wins: 1 },
+  { position: 6, driverId: 6, driverName: "Lewis Hamilton", driverAbbr: "HAM", driverNumber: 44, teamId: 3, teamName: "Ferrari", points: 76, wins: 0 },
+  { position: 7, driverId: 7, driverName: "Kimi Antonelli", driverAbbr: "ANT", driverNumber: 12, teamId: 4, teamName: "Mercedes", points: 54, wins: 0 },
+  { position: 8, driverId: 8, driverName: "Carlos Sainz", driverAbbr: "SAI", driverNumber: 55, teamId: 7, teamName: "Williams", points: 41, wins: 0 },
+  { position: 9, driverId: 9, driverName: "Alexander Albon", driverAbbr: "ALB", driverNumber: 23, teamId: 7, teamName: "Williams", points: 32, wins: 0 },
+  { position: 10, driverId: 10, driverName: "Liam Lawson", driverAbbr: "LAW", driverNumber: 30, teamId: 1, teamName: "Red Bull Racing", points: 28, wins: 0 },
 ];
 
 const MOCK_CONSTRUCTOR_STANDINGS: ConstructorStandingRow[] = [
@@ -77,7 +65,7 @@ const MONACO_FASTEST_LAPS: FastestLapRow[] = [
 ];
 
 function geoForRace(raceId: string) {
-  return CIRCUIT_GEO.find((circuit) => circuit.raceId === raceId);
+  return geoForRaceId(raceId);
 }
 
 function buildSessions(): LiveSession[] {
@@ -103,7 +91,7 @@ function buildSessions(): LiveSession[] {
       startTime: agoHours(0.5),
       weekendStatus: "active",
       round: 8,
-      season: 2025,
+      season: GLOBAL_SEASON,
       lapsCurrent: 12,
       lapsTotal: null,
     },
@@ -124,7 +112,7 @@ function buildSessions(): LiveSession[] {
       startTime: inHours(4),
       weekendStatus: "active",
       round: 8,
-      season: 2025,
+      season: GLOBAL_SEASON,
       lapsCurrent: null,
       lapsTotal: null,
     },
@@ -145,7 +133,7 @@ function buildSessions(): LiveSession[] {
       startTime: inHours(28),
       weekendStatus: "active",
       round: 8,
-      season: 2025,
+      season: GLOBAL_SEASON,
       lapsCurrent: null,
       lapsTotal: 78,
     },
@@ -166,7 +154,7 @@ function buildSessions(): LiveSession[] {
       startTime: inHours(96),
       weekendStatus: "upcoming",
       round: 9,
-      season: 2025,
+      season: GLOBAL_SEASON,
       lapsCurrent: null,
       lapsTotal: null,
     },
@@ -187,7 +175,7 @@ function buildSessions(): LiveSession[] {
       startTime: inHours(120),
       weekendStatus: "upcoming",
       round: 9,
-      season: 2025,
+      season: GLOBAL_SEASON,
       lapsCurrent: null,
       lapsTotal: null,
     },
@@ -208,7 +196,7 @@ function buildSessions(): LiveSession[] {
       startTime: inHours(144),
       weekendStatus: "upcoming",
       round: 9,
-      season: 2025,
+      season: GLOBAL_SEASON,
       lapsCurrent: null,
       lapsTotal: 70,
     },
@@ -295,6 +283,10 @@ export function getMockRaceProfile(raceId: string): RaceProfile | null {
     { id: 701, type: "R" as const, typeLabel: "Race", date: new Date(Date.now() - 14 * 24 * 3_600_000).toISOString(), status: "Completed" as const, lapsCurrent: 63, lapsTotal: 63 },
   ];
 
+  const circuitLength = isMonaco ? "3.337 km" : isCanada ? "4.361 km" : "5.000 km";
+  const circuitLaps = isMonaco ? 78 : isCanada ? 70 : 58;
+  const enrichment = getRaceDetailEnrichment(entry.id, entry.round, entry.weekendStatus);
+
   return {
     id: entry.id,
     apiCompetitionId: entry.apiCompetitionId,
@@ -309,8 +301,8 @@ export function getMockRaceProfile(raceId: string): RaceProfile | null {
       id: geo.circuitId,
       name: geo.name,
       image: `https://media.api-sports.io/formula-1/circuits/${geo.circuitId}.png`,
-      length: isMonaco ? "3.337 km" : isCanada ? "4.361 km" : "5.000 km",
-      laps: isMonaco ? 78 : isCanada ? 70 : 58,
+      length: circuitLength,
+      laps: circuitLaps,
       latitude: geo.latitude,
       longitude: geo.longitude,
     },
@@ -323,6 +315,18 @@ export function getMockRaceProfile(raceId: string): RaceProfile | null {
     fastestLaps: isMonaco ? MONACO_FASTEST_LAPS : [],
     lapLeaders: isMonaco ? MONACO_LAP_LEADERS : [],
     weather: isMonaco ? MONACO_WEATHER : isCanada ? { airTempC: 18, trackTempC: 32, condition: "Overcast", rainProbability: 40, wind: "18 km/h SW" } : null,
+    circuitInfo: buildRaceCircuitInfo(
+      entry.id,
+      entry.country,
+      entry.city,
+      geo.name,
+      circuitLength,
+      circuitLaps,
+    ),
+    raceResults: enrichment.raceResults,
+    driverPerformance: enrichment.driverPerformance,
+    circuitHistory: enrichment.circuitHistory,
+    standingsImpact: enrichment.standingsImpact,
   };
 }
 
@@ -354,4 +358,98 @@ export function getMockAllCircuitMarkers(): CircuitActivity[] {
       weekendStatus: entry?.weekendStatus ?? "finished",
     };
   });
+}
+
+function buildRegionStats(): RegionRaceStat[] {
+  const regions = Object.keys(RACE_REGION_LABELS) as RaceRegion[];
+
+  return regions.map((region) => {
+    const races = SEASON_CALENDAR.filter((race) => race.region === region);
+    const circuits = SEASON_CIRCUIT_GEO.filter((geo) =>
+      races.some((race) => race.id === geo.raceId),
+    );
+
+    return {
+      region,
+      label: RACE_REGION_LABELS[region],
+      raceCount: races.length,
+      circuitCount: circuits.length,
+      liveWeekends: races.filter((race) => race.weekendStatus === "active").length,
+    };
+  });
+}
+
+function buildCalendarEntries() {
+  const now = Date.now();
+  const dayMs = 24 * 3_600_000;
+
+  return SEASON_CALENDAR.map((race) => {
+    const geo = geoForRaceId(race.id);
+    const offset =
+      race.weekendStatus === "finished"
+        ? -((SEASON_CALENDAR.length - race.round + 2) * 14 * dayMs)
+        : race.weekendStatus === "active"
+          ? 0
+          : (race.round - 8) * 14 * dayMs;
+
+    return {
+      id: race.id,
+      round: race.round,
+      name: race.name,
+      shortName: race.shortName,
+      country: race.country,
+      city: race.city,
+      region: race.region,
+      weekendStatus: race.weekendStatus,
+      raceDate: new Date(now + offset).toISOString(),
+      circuitId: geo?.circuitId ?? race.apiCompetitionId,
+    };
+  });
+}
+
+export function getMockGlobalOverview(): GlobalOverviewPayload {
+  const leader = MOCK_DRIVER_STANDINGS[0];
+  const activeRace =
+    SEASON_CALENDAR.find((race) => race.weekendStatus === "active") ??
+    SEASON_CALENDAR.find((race) => race.weekendStatus === "upcoming")!;
+  const activeGeo = geoForRaceId(activeRace.id)!;
+  const liveSessions = ALL_SESSIONS.filter(
+    (session) => session.raceId === activeRace.id && session.status === "Live",
+  );
+  const nextSession = ALL_SESSIONS.filter(
+    (session) => session.raceId === activeRace.id && session.status === "Scheduled",
+  ).sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())[0];
+
+  return {
+    season: GLOBAL_SEASON,
+    championship: {
+      season: GLOBAL_SEASON,
+      seasonLabel: `${GLOBAL_SEASON} FIA Formula One World Championship`,
+      driverName: leader.driverName,
+      driverAbbr: leader.driverAbbr,
+      teamName: leader.teamName,
+      points: leader.points,
+      wins: leader.wins,
+    },
+    circuits: getMockAllCircuitMarkers(),
+    calendar: buildCalendarEntries(),
+    weekendHighlight: {
+      raceId: activeRace.id,
+      name: activeRace.name,
+      shortName: activeRace.shortName,
+      round: activeRace.round,
+      country: activeRace.country,
+      city: activeRace.city,
+      circuitName: activeGeo.name,
+      weekendStatus: activeRace.weekendStatus,
+      liveSessions: liveSessions.length,
+      nextSessionLabel: nextSession?.typeLabel ?? liveSessions[0]?.typeLabel ?? null,
+      nextSessionStart: nextSession?.startTime ?? liveSessions[0]?.startTime ?? null,
+    },
+    driverStandings: MOCK_DRIVER_STANDINGS,
+    constructorStandings: MOCK_CONSTRUCTOR_STANDINGS,
+    regionStats: buildRegionStats(),
+    updatedAt: new Date().toISOString(),
+    provider: "mock",
+  };
 }
