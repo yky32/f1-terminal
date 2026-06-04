@@ -36,11 +36,14 @@ export default async function RacePage({ params }: RacePageProps) {
 
   const provider = getDataProvider();
   const catalog = await provider.getRaceCatalog();
+  const initialRace = await provider.getRaceById(raceId);
+
+  if (!initialRace) notFound();
 
   return (
     <RacesPageShell
       catalog={catalog}
-      initialRace={null}
+      initialRace={initialRace}
       selectedRaceId={raceId}
     />
   );

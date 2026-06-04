@@ -15,13 +15,13 @@ export const metadata = buildPageMetadata({
 export default async function RacesPage() {
   const provider = getDataProvider();
   const catalog = await provider.getRaceCatalog();
-  const initialRace = catalog.find((race) => race.id === FEATURED_RACE_ID) ?? catalog[0] ?? null;
+  const initialRace = await provider.getRaceById(FEATURED_RACE_ID);
 
   return (
     <RacesPageShell
       catalog={catalog}
       initialRace={initialRace}
-      selectedRaceId={initialRace?.id ?? null}
+      selectedRaceId={FEATURED_RACE_ID}
     />
   );
 }

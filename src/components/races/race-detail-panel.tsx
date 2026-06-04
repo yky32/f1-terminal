@@ -71,10 +71,7 @@ export function RaceDetailPanel({ race, loading = false }: RaceDetailPanelProps)
   return (
     <div className="space-y-4">
       <div
-        className={cn(
-          racesGlass,
-          "flex gap-1 overflow-x-auto p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
-        )}
+        className="flex gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         role="tablist"
         aria-label={`${race.shortName} sections`}
       >
@@ -90,7 +87,7 @@ export function RaceDetailPanel({ race, loading = false }: RaceDetailPanelProps)
               "shrink-0 rounded-full px-3.5 py-2 text-[0.8125rem] font-medium transition-colors sm:px-4",
               tab === item.id
                 ? "bg-foreground text-background"
-                : "text-neutral-700 hover:bg-white/50 hover:text-neutral-950",
+                : "text-neutral-600 hover:bg-black/[0.05] hover:text-neutral-950",
             )}
           >
             {item.label}

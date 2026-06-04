@@ -35,14 +35,19 @@ export function RaceCalendarItem({ race, active, loaded, onClick }: RaceCalendar
 
       <span
         className={cn(
-          "relative min-w-0 flex-1 overflow-hidden rounded-[0.875rem] border transition-[background-color,border-color,box-shadow,transform] duration-200",
+          "relative min-w-0 flex-1 overflow-hidden rounded-[0.875rem] border transition-[background-color,border-color,box-shadow,transform,opacity] duration-200",
           active
             ? "border-neutral-900/14 bg-white/92 shadow-[0_10px_28px_rgba(15,23,42,0.08)]"
-            : "border-black/[0.04] bg-white/45 group-hover:border-black/[0.08] group-hover:bg-white/78",
+            : race.weekendStatus === "finished"
+              ? "border-black/[0.04] bg-white/35 opacity-90 group-hover:border-emerald-900/10 group-hover:bg-white/60 group-hover:opacity-100"
+              : "border-black/[0.04] bg-white/45 group-hover:border-black/[0.08] group-hover:bg-white/78",
         )}
       >
         <span
-          className="absolute inset-y-2 left-0 w-[3px] rounded-full"
+          className={cn(
+            "absolute inset-y-2 left-0 w-[3px] rounded-full",
+            race.weekendStatus === "finished" && !active && "opacity-45",
+          )}
           style={{ backgroundColor: accent }}
           aria-hidden
         />
@@ -50,7 +55,14 @@ export function RaceCalendarItem({ race, active, loaded, onClick }: RaceCalendar
         <span className="flex items-start gap-2 px-3 py-2.5 pl-3.5">
           <span className="min-w-0 flex-1">
             <span className="flex items-center gap-2">
-              <span className="truncate text-[0.875rem] font-semibold tracking-[-0.01em] text-neutral-950">
+              <span
+                className={cn(
+                  "truncate text-[0.875rem] font-semibold tracking-[-0.01em]",
+                  race.weekendStatus === "finished" && !active
+                    ? "text-neutral-600"
+                    : "text-neutral-950",
+                )}
+              >
                 {race.shortName}
               </span>
               <WeekendStatusPill status={race.weekendStatus} />
@@ -106,12 +118,12 @@ function RoundNode({
           : live
             ? "bg-white text-red-700 ring-red-500/20"
             : done
-              ? "bg-white/90 text-neutral-500 ring-black/[0.05]"
+              ? "bg-emerald-500/10 text-emerald-700 ring-emerald-500/15"
               : "bg-white/75 text-neutral-600 ring-black/[0.04]",
       )}
     >
       {done && !active ? (
-        <Check className="h-3.5 w-3.5 stroke-[2.5]" aria-hidden />
+        <Check className="h-3.5 w-3.5 stroke-[2.75]" aria-hidden />
       ) : (
         round
       )}
@@ -125,8 +137,9 @@ function RoundNode({
 function WeekendStatusPill({ status }: { status: WeekendStatus }) {
   if (status === "finished") {
     return (
-      <span className="shrink-0 rounded-full bg-black/[0.05] px-1.5 py-0.5 text-[0.5625rem] font-semibold uppercase tracking-[0.08em] text-neutral-500">
-        Done
+      <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[0.5625rem] font-semibold uppercase tracking-[0.08em] text-emerald-700">
+        <Check className="h-2.5 w-2.5 stroke-[2.75]" aria-hidden />
+        Completed
       </span>
     );
   }

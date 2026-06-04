@@ -14,6 +14,7 @@ import {
   writeRaceCalendarCollapsed,
 } from "@/lib/f1/race-calendar-ui";
 import {
+  isLoadedRaceProfile,
   isValidCachedRaceProfile,
   readCachedRaceProfile,
   writeCachedRaceProfile,
@@ -41,12 +42,14 @@ export function RacesFeed({
 
   const [selectedId, setSelectedId] = useState(resolvedSelectedId);
   const [profiles, setProfiles] = useState<Record<string, RaceProfile>>(() => {
-    if (!initialRace) return {};
+    if (!initialRace || !isLoadedRaceProfile(initialRace)) return {};
     return { [initialRace.id]: initialRace };
   });
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [calendarCollapsed, setCalendarCollapsed] = useState(false);
-  const loadedRef = useRef<Set<string>>(new Set(initialRace ? [initialRace.id] : []));
+  const loadedRef = useRef<Set<string>>(
+    new Set(initialRace && isLoadedRaceProfile(initialRace) ? [initialRace.id] : []),
+  );
 
   useEffect(() => {
     setCalendarCollapsed(readRaceCalendarCollapsed());
@@ -101,7 +104,7 @@ export function RacesFeed({
   const selectedRace = races.find((race) => race.id === selectedId) ?? races[0] ?? null;
   const loading =
     loadingId === selectedId &&
-    (!selectedRace || !isValidCachedRaceProfile(selectedRace, selectedId));
+    (!selectedRace || !isLoadedRaceProfile(selectedRace));
 
   const motionReduce = "motion-reduce:transition-none motion-reduce:transform-none";
   const gridMotion = cn(
@@ -203,7 +206,9 @@ export function RacesFeed({
           {selectedRace ? (
             <>
               <RaceHero race={selectedRace} loading={loading} />
-              <RaceDetailPanel race={selectedRace} loading={loading} />
+              <div className="mt-6">
+                <RaceDetailPanel race={selectedRace} loading={loading} />
+              </div>
             </>
           ) : null}
         </div>

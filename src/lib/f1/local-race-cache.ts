@@ -46,6 +46,10 @@ export function writeCachedRaceProfile(raceId: string, profile: RaceProfile) {
   }
 }
 
+export function isLoadedRaceProfile(profile: RaceProfile | undefined): profile is RaceProfile {
+  return Boolean(profile && profile.sessions.length > 0);
+}
+
 export function isValidCachedRaceProfile(profile: RaceProfile, raceId: string) {
-  return profile.id === raceId && profile.sessions.length > 0;
+  return profile.id === raceId && isLoadedRaceProfile(profile);
 }
